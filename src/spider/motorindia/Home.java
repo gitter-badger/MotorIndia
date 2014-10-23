@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.support.v4.widget.DrawerLayout;
 
 
@@ -44,6 +45,11 @@ public class Home extends Activity
 		      R.drawable.ic_launcher,
 		  };
 
+		 
+	//Global variables for use
+		  //listview for the list in 
+		  ListView list;
+		  
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -89,6 +95,18 @@ public class Home extends Activity
             case 3:
                 mTitle = getString(R.string.title_section3);
                 break;
+            case 4:
+    			mTitle = getString(R.string.title_section4);
+    			break;
+    		case 5:
+    			mTitle = getString(R.string.title_section5);
+    			break;
+    		case 6:
+    			mTitle = getString(R.string.title_section6);
+    			break;
+    		case 7:
+    			mTitle = getString(R.string.title_section7);
+    			break;
         }
     }
 

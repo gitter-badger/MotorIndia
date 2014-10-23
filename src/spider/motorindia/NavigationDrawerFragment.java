@@ -97,6 +97,9 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
+        
+        //ADDED THE TILE'S HERE SO THAT THE ADAPTER IS SET WITH THE ENTIRE LIST
+        
         mDrawerListView.setAdapter(new ArrayAdapter<String>(
                 getActionBar().getThemedContext(),
                 android.R.layout.simple_list_item_activated_1,
@@ -105,7 +108,11 @@ public class NavigationDrawerFragment extends Fragment {
                         getString(R.string.title_section1),
                         getString(R.string.title_section2),
                         getString(R.string.title_section3),
-                }));
+                        getString(R.string.title_section4),
+						getString(R.string.title_section5),
+						getString(R.string.title_section6),
+						getString(R.string.title_section7),}));
+        
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }
@@ -247,8 +254,15 @@ public class NavigationDrawerFragment extends Fragment {
             return true;
         }
 
+      //TODO why can't I replace the "action_example" with "update" even though
+      //both are properly defined strings in strings.xml i had to change the value of "action_example"
         if (item.getItemId() == R.id.action_example) {
-            Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT).show();
+        	
+        	//"EXAMPLE ACTION" DOESNT SOUND GOOD 
+        	//TODO 
+        	//update the lists on this button click
+        	
+            Toast.makeText(getActivity(), "YOU can set something to happen on this event", Toast.LENGTH_SHORT).show();
             return true;
         }
 
