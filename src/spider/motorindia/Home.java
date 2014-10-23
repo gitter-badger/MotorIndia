@@ -16,6 +16,33 @@ import android.support.v4.widget.DrawerLayout;
 
 public class Home extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+	
+	//FOR NOW WE ARE USING HARDCODED string array and image
+	//TODO
+	//use the links provided by rishi and get the title and images dynamically
+	String[] title = {
+		      "		Volvo Buses remains unchallenged",
+		      "		Green manufacturing, a major challenge for emerging companies: Dr. Wilfried G. Aulbur",
+		      "		JOST Group maintains technology leadership with new innovative products",
+		      "		ZF symbolishes CV competence for sustainable future transport",
+		      "		MAN presents a range of new truck & bus technologies",
+		      "		Meritor global axle and brake capabilities well demonstrated",
+		      "		Call-in-centre for reefer transport operators opened in Delhi",
+		      "		Apollo Tyres confirms Hungary as location for first greenfield facility outside India",
+		      "		Tata Motors joins hands with Microlise for advanced telematics and fleet management services",
+		  } ;
+		  Integer[] imageId = {
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		  };
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
