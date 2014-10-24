@@ -73,6 +73,25 @@ public class Home extends Activity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+        //now we draw up the list
+        //populatelist();
+        //TODO
+        /*
+         * We are unable to draw up the list in oncreate, the error thrown is a  
+        runtime exception - nullpointerexeption
+        ie we somehow tried to access a field or method of an object or an element 
+        of an array when there is no instance or array to use.
+         */
+        
+    }
+    
+    //a function to populate the list with test values
+    public void populatelist(){
+    	//calls the constructor to set the title and imageid
+    	CustomList adapter = new CustomList(Home.this, title, imageId);
+    	// set "list" the handle, pointing to the respective views
+        list=(ListView)findViewById(R.id.listView1);
+        list.setAdapter(adapter);
     }
 
     @Override
