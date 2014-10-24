@@ -27,7 +27,7 @@ public class CustomList extends ArrayAdapter<String>{
 	public View getView(int position, View view, ViewGroup parent) {
 			
 	LayoutInflater inflater = context.getLayoutInflater();
-	//TODO LOOK INTO THIS ?!?
+	//TODO LOOK INTO THIS ?!? read this - http://lucasr.org/2012/04/05/performance-tips-for-androids-listview/
 	View rowView= inflater.inflate(R.layout.single_line, null, true);
 	TextView txtTitle = (TextView) rowView.findViewById(R.id.text);
 	ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);

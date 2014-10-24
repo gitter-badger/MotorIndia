@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 import android.support.v4.widget.DrawerLayout;
 
 
@@ -93,6 +94,11 @@ public class Home extends Activity
         list=(ListView)findViewById(R.id.listView1);
         list.setAdapter(adapter);
     }
+    
+    //a function for toast
+    public void toast(String display){
+    	Toast.makeText(Home.this, "You Clicked at " + display, Toast.LENGTH_SHORT).show();
+    }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
@@ -134,6 +140,34 @@ public class Home extends Activity
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
+        
+        //TODO
+        //AFTER A LOT OF WORK, @vishnugt has found a workaround, a fix to inflate the listview
+        //different values will be used to populate the list when different options are selected
+        if(mTitle==getString(R.string.title_section1)){
+        	toast(getString(R.string.title_section1));
+        }
+        else if(mTitle==getString(R.string.title_section2)){
+        	toast(getString(R.string.title_section1));
+        }
+        else if(mTitle==getString(R.string.title_section3)){
+        	toast(getString(R.string.title_section1));
+        }
+        else if(mTitle==getString(R.string.title_section4)){
+        	toast(getString(R.string.title_section1));
+        }
+        else if(mTitle==getString(R.string.title_section5)){
+        	toast(getString(R.string.title_section1));
+        }
+        else if(mTitle==getString(R.string.title_section6)){
+        	toast(getString(R.string.title_section1));
+        }
+        else if(mTitle==getString(R.string.title_section7)){
+        	toast(getString(R.string.title_section1));
+        }
+        //as right now we have a single list for all these cases we call the function populatelist() (Right now no arguments because of that)
+        populatelist();
+  
     }
 
 
