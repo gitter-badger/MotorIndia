@@ -1,7 +1,8 @@
-Android
-=======
+MotorIndia Android Application
+==============================
 
-###Android App Development
+Overview
+--------
 
 This is the app to browse through the articles, images etc from [motorindia][1].  
 Also it is intended to implement GCM notification, subscription.  
