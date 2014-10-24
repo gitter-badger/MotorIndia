@@ -148,22 +148,22 @@ public class Home extends Activity
         	toast(getString(R.string.title_section1));
         }
         else if(mTitle==getString(R.string.title_section2)){
-        	toast(getString(R.string.title_section1));
+        	toast(getString(R.string.title_section2));
         }
         else if(mTitle==getString(R.string.title_section3)){
-        	toast(getString(R.string.title_section1));
+        	toast(getString(R.string.title_section3));
         }
         else if(mTitle==getString(R.string.title_section4)){
-        	toast(getString(R.string.title_section1));
+        	toast(getString(R.string.title_section4));
         }
         else if(mTitle==getString(R.string.title_section5)){
-        	toast(getString(R.string.title_section1));
+        	toast(getString(R.string.title_section5));
         }
         else if(mTitle==getString(R.string.title_section6)){
-        	toast(getString(R.string.title_section1));
+        	toast(getString(R.string.title_section6));
         }
         else if(mTitle==getString(R.string.title_section7)){
-        	toast(getString(R.string.title_section1));
+        	toast(getString(R.string.title_section7));
         }
         //as right now we have a single list for all these cases we call the function populatelist() (Right now no arguments because of that)
         populatelist();
