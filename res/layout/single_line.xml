@@ -21,6 +21,6 @@
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/icon"
         android:ellipsize="marquee"
-        android:textSize="19sp" />
+        android:textSize="17sp" />
 
 </RelativeLayout> 

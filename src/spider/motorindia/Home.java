@@ -1,11 +1,18 @@
 package spider.motorindia;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+//this import establishes the link between this class and the "Retrivejson" class 
+import spider.motorindia.Retrivejson.MyCallbackInterface;
+
 import android.app.Activity;
 
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,7 +24,7 @@ import android.support.v4.widget.DrawerLayout;
 
 
 public class Home extends Activity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, MyCallbackInterface {
 	
 	//FOR NOW WE ARE USING HARDCODED string array and image
 	//TODO
@@ -48,8 +55,12 @@ public class Home extends Activity
 
 		 
 	//Global variables for use
-		  //listview for the list in 
+		  //ListView for the list in 
 		  ListView list;
+		  //Flag variable for the workaround
+		  int workaround;
+		  //the variable which keeps track of how many titles have been fetched from the Internet
+		  int i=0;
 		  
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -60,6 +71,7 @@ public class Home extends Activity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,12 +90,16 @@ public class Home extends Activity
         //populatelist();
         //TODO
         /*
-         * We are unable to draw up the list in oncreate, the error thrown is a  
+         * We are unable to draw up the list in Oncreate(), the error thrown is a  
         runtime exception - nullpointerexeption
         ie we somehow tried to access a field or method of an object or an element 
         of an array when there is no instance or array to use.
          */
-        
+        // this is PART OF THE WORKAROUND (check out the TODOs)
+        // we need to make sure that even if the screen orientation changes the workaround int variable is set back to 0 
+        //in order to avoid the printing that a click has taken place.
+        workaround=0;
+        gettitles(9);
     }
     
     //a function to populate the list with test values
@@ -98,6 +114,14 @@ public class Home extends Activity
     //a function for toast
     public void toast(String display){
     	Toast.makeText(Home.this, "You Clicked at " + display, Toast.LENGTH_SHORT).show();
+    }
+    
+    //the function which starts the threads which in turn get the titles and set them as soon as we get them in the onrequestcompleted function
+    public void gettitles(int number){
+    	for(int i=1;i<number;i++){
+			String link = "http://motorindiaonline.in/android/?s_i="+Integer.toString(i)+"&e_i="+Integer.toString(i);
+			new Retrivejson(this).execute(link);
+		}
     }
 
     @Override
@@ -141,11 +165,14 @@ public class Home extends Activity
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
         
-        //TODO
+		//TODO
         //AFTER A LOT OF WORK, @vishnugt has found a workaround, a fix to inflate the listview
         //different values will be used to populate the list when different options are selected
-        if(mTitle==getString(R.string.title_section1)){
+        if(mTitle==getString(R.string.title_section1) && workaround!=0){
         	toast(getString(R.string.title_section1));
+        	//as the app initilizes the action bar it checks which title is currently is on and due to the workaround alerts the user
+        	//that a click has been registered
+        	workaround=1;
         }
         else if(mTitle==getString(R.string.title_section2)){
         	toast(getString(R.string.title_section2));
@@ -166,7 +193,13 @@ public class Home extends Activity
         	toast(getString(R.string.title_section7));
         }
         //as right now we have a single list for all these cases we call the function populatelist() (Right now no arguments because of that)
-        populatelist();
+        //we only need to populate it once (on create the flag variable workaround is set thus using it we only call it the first time 
+        // the actionbar is drawn
+        if(workaround==0){
+        	populatelist();
+        	//TODO note that this measure did not stop the issue #1 as predicted by me.
+        	//i did not notice any noticeable change by bypassing the setting of the list over and over again.
+        }
   
     }
 
@@ -236,4 +269,26 @@ public class Home extends Activity
         }
     }
 
+	@Override
+	public void onRequestCompleted(JSONObject result) {
+		// I got the JSON! i just used a interface! Communication complete!
+				if(result==null){
+					Log.i("debug","Json object's value is null");
+				}
+				else{
+					try {
+						title[i]=result.getString("title");
+						i=i+1;
+						populatelist();
+					} catch (JSONException e) {
+						// thats all folks
+						e.printStackTrace();
+						Log.i("debug","it aint null but its aJSONException");
+					}
+				}
+				
+			}
+		
 }
+
+
