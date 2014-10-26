@@ -31,30 +31,30 @@ import android.support.v4.widget.DrawerLayout;
 
 public class Home extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, MyCallbackInterface {
-		
+
 	//TODO
 	/*
 	 * use the links provided by rishi and GET the images dynamically
 	for now we are using stored images for storage
-	
-	
+
+
 	these titles, ie "savedtitles" are shown in case Internet is not available
 	MAKE these savedtitles values persistent ie, store it in app cache.
 	UPDATE these values with the latest 10 titles everytime Internet connection is established
 	 */
-	
+
 	String[] savedtitles = {
-		      "		Volvo Buses remains unchallenged",
-		      "		Green manufacturing, a major challenge for emerging companies: Dr. Wilfried G. Aulbur",
-		      "		JOST Group maintains technology leadership with new innovative products",
-		      "		ZF symbolishes CV competence for sustainable future transport",
-		      "		MAN presents a range of new truck & bus technologies",
-		      "		Meritor global axle and brake capabilities well demonstrated",
-		      "		Call-in-centre for reefer transport operators opened in Delhi",
-		      "		Apollo Tyres confirms Hungary as location for first greenfield facility outside India",
-		      "		Tata Motors joins hands with Microlise for advanced telematics and fleet management services",
+		      "	 Tata Motors joins hands with Microlise for advanced telematics and fleet management services",
+		      "	 Green manufacturing, a major challenge for emerging companies: Dr. Wilfried G. Aulbur",
+		      "	 JOST Group maintains technology leadership with new innovative products",
+		      "	 ZF symbolishes CV competence for sustainable future transport",
+		      "	 MAN presents a range of new truck & bus technologies",
+		      "	 Meritor global axle and brake capabilities well demonstrated",
+		      "	 Call-in-centre for reefer transport operators opened in Delhi",
+		      "	 Apollo Tyres confirms Hungary as location for first greenfield facility outside India",
+		      "	 Volvo Buses remains unchallenged                                                     ",
 		  } ;
-	
+
 		  Integer[] imageId = {
 		      R.drawable.ic_launcher,
 		      R.drawable.ic_launcher,
@@ -67,7 +67,7 @@ public class Home extends Activity
 		      R.drawable.ic_launcher,
 		      R.drawable.ic_launcher,
 		  };
-		  
+
 		  //Due to the requirement for dynamic lists, ie add titles as we go down we need to
 		  ArrayList<String> titles = new ArrayList<String>();
 
@@ -84,7 +84,7 @@ public class Home extends Activity
 		  String[] titlearray;
 		  // values which determine the number of threads which are launched and how frequently - it refers to article numbers
 		  int till=11,from=1;
-		  
+
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -102,7 +102,7 @@ public class Home extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        
+
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
@@ -112,8 +112,8 @@ public class Home extends Activity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        
-        
+
+
         //now we draw up the list
         //populatelist();
         //TODO
@@ -123,7 +123,7 @@ public class Home extends Activity
         ie we somehow tried to access a field or method of an object or an element
         of an array when there is no instance or array to use.
          */
-        
+
         // this is PART OF THE WORKAROUND (check out the TODOs)
         // we need to make sure that even if the screen orientation changes the workaround integer variable is set back to 0
         //in order to avoid the printing that a click has taken place.
@@ -155,14 +155,14 @@ public class Home extends Activity
     		return;
     	}
     	toast("Fetching next 10 articles");
-    	//start from 11th latest article when this is first called, then for subsequent calls 
+    	//start from 11th latest article when this is first called, then for subsequent calls
     	from=till;
     	// and get 10 articles from "till"
     	till=from+10;
     	//And start the threads
     	launchthreadstogettitles(till,from);
     }
-    
+
     //a function to populate the list with titles from titles (as of now)
     public void populatelist(){
     	if(isNetworkConnected()){
@@ -172,12 +172,12 @@ public class Home extends Activity
          	CustomList adapter = new CustomList(Home.this, titlearray, imageId);
          	//set "list" the handle, pointing to the respective views
             list=(ListView)findViewById(R.id.listView1);
-            
+
             list.setAdapter(adapter);
     	}
     	else{
     		// As we don't have Internet connectivity
-    		
+
         	//calls the constructor to set the titles as the savedtitles and imageid
          	CustomList adapter = new CustomList(Home.this, savedtitles, imageId);
          	// set "list" the handle, pointing to the respective views
@@ -245,8 +245,8 @@ public class Home extends Activity
 		//TODO
         //AFTER A LOT OF WORK, @vishnugt has found a workaround, a fix to inflate the listview
         //different values will be used to populate the list when different options are selected
-        
-        //we also check if this is the first time, during oncreate when the action bar is set, if so, we shouldn't 
+
+        //we also check if this is the first time, during oncreate when the action bar is set, if so, we shouldn't
         //trigger the toast prompting the user that a touch event has taken place
         if(mTitle==getString(R.string.title_section1) && first_time!=1){
         	toast(getString(R.string.title_section1));
@@ -276,7 +276,7 @@ public class Home extends Activity
         //TODO, find out WHY!!! passing null as the parent works.. i need to remove this link error OR explain it away
         View footerView = ((LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.footer_layout, null, false);
         list.addFooterView(footerView);
-        
+
         //as right now we have a single list for all these cases we call the function populatelist() (Right now no arguments because of that)
         //we only need to populate it once (on create the flag variable workaround is set thus using it we only call it the first time
         // the actionbar is drawn
@@ -350,7 +350,7 @@ public class Home extends Activity
         }
     }
 
-    //This is the method inherited from Mycallbackinterface, which is called by retriveJSON after it receives the JSON object. 
+    //This is the method inherited from Mycallbackinterface, which is called by retriveJSON after it receives the JSON object.
 	@Override
 	public void onRequestCompleted(JSONObject result) {
 		// I got the JSON! i just used a interface! Communication complete!

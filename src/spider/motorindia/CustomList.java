@@ -10,14 +10,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 public class CustomList extends ArrayAdapter<String>{
 private final Activity context;
-private final String[] web;
+private final String[] title;
 private final Integer[] imageId;
 
-//constructor?
-public CustomList(Activity context,String[] web, Integer[] imageId) {
-super(context, R.layout.single_line, web);
+//constructor of this class, this called when we initilize the adapter
+public CustomList(Activity context,String[] title, Integer[] imageId) {
+super(context, R.layout.single_line, title);
 this.context = context;
-this.web = web;
+this.title = title;
 this.imageId = imageId;
 }
 
@@ -28,9 +28,9 @@ LayoutInflater inflater = context.getLayoutInflater();
 View rowView= inflater.inflate(R.layout.single_line, null, true);
 TextView txtTitle = (TextView) rowView.findViewById(R.id.text);
 ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
-txtTitle.setText(web[position]);
+txtTitle.setText(title[position]);
 imageView.setImageResource(imageId[position]);
 return rowView;
 }
 
-} 
+}
