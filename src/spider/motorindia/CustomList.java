@@ -2,13 +2,17 @@ package spider.motorindia;
 
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-public class CustomList extends ArrayAdapter<String>{
+public class CustomList extends ArrayAdapter<String> implements OnItemClickListener{
 private final Activity context;
 private final String[] title;
 private final Integer[] imageId;
@@ -33,4 +37,13 @@ imageView.setImageResource(imageId[position]);
 return rowView;
 }
 
+@Override
+public void onItemClick(AdapterView<?> arg0, View v, int arg2, long arg3) {
+	// 
+	Log.i("debug",v.toString());
+	Log.i("debug","check");
 }
+	
+
+}
+

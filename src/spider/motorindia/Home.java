@@ -23,10 +23,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v4.widget.DrawerLayout;
+
 
 
 public class Home extends Activity
@@ -137,7 +138,11 @@ public class Home extends Activity
         else{
         	toast("NO internet connection");
         }
+        
     }
+    
+    
+    
     //a function to check if Internet is available
     public boolean isNetworkConnected(){
     	ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -149,7 +154,7 @@ public class Home extends Activity
     	   return true;
     }
     //a function to get the next 10 articles
-    public void update(){
+    public void update(View v){
     	if(!isNetworkConnected()){
     		toast("Fetching of articles Failed! No internet. ");
     		return;
@@ -190,7 +195,7 @@ public class Home extends Activity
 
     //a function for toast
     public void toast(String display){
-    	Toast.makeText(Home.this,display, Toast.LENGTH_SHORT).show();
+    	Toast.makeText(Home.this,display, Toast.LENGTH_LONG).show();
     }
 
     //the function which starts the threads which in turn get the titles and set them as soon as we get them in the onrequestcompleted function
@@ -353,6 +358,9 @@ public class Home extends Activity
     //This is the method inherited from Mycallbackinterface, which is called by retriveJSON after it receives the JSON object.
 	@Override
 	public void onRequestCompleted(JSONObject result) {
+		//As atleast one title has loaded, we can change the footer's text
+		TextView footer =(TextView)findViewById(R.id.footer_1);
+		footer.setText("Fetch More Articles");
 		// I got the JSON! i just used a interface! Communication complete!
 				if(result==null){
 					Log.i("debug","Json object's value is null");
