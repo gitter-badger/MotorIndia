@@ -15,5 +15,6 @@
     <string name="title_section7">Subscribe</string>
     <string name="update">Update</string>
     <string name="imagecontent">the respective images of the articles</string>
+    <string name="footer_text_1">Fetch More articles</string>
 
 </resources>

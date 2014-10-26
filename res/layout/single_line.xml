@@ -15,10 +15,10 @@
 
     <TextView
         android:id="@+id/text"
-        android:layout_width="fill_parent"
-        android:layout_height="26dip"
-        android:layout_alignBottom="@+id/icon"
-        android:layout_alignParentTop="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignTop="@+id/icon"
         android:layout_toRightOf="@+id/icon"
         android:ellipsize="marquee"
         android:textSize="17sp" />
