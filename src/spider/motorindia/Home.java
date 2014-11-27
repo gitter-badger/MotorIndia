@@ -67,6 +67,22 @@ public class Home extends Activity
 		      R.drawable.ic_launcher,
 		      R.drawable.ic_launcher,
 		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
 		  };
 
 		  //Due to the requirement for dynamic lists, ie add titles as we go down we need to
@@ -90,7 +106,7 @@ public class Home extends Activity
 
 		  
 		  //Global constants
-		  
+		  // this is the number of titles that are fetched in groups
 		  final static int NO_TITLES = 10;
 
     /**
@@ -178,13 +194,13 @@ public class Home extends Activity
     //a function to populate the list with titles from titles (as of now)
     public void populatelist(){
     	if(isNetworkConnected()){
+    		
     	   	//this sets up the dynamic array which is send to the adapter's constructor
             titlearray = titles.toArray(new String[titles.size()]);
         	//calls the constructor to set the title and imageid
          	CustomList adapter = new CustomList(Home.this, titlearray, imageId);
          	//set "list" the handle, pointing to the respective views
             list=(ListView)findViewById(R.id.listView1);
-
             list.setAdapter(adapter);
     	}
     	else{
