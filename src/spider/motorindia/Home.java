@@ -41,7 +41,7 @@ public class Home extends Activity
 
 	these titles, ie "savedtitles" are shown in case Internet is not available
 	MAKE these savedtitles values persistent ie, store it in app cache.
-	UPDATE these values with the latest 10 titles everytime Internet connection is established
+	UPDATE these values with the latest NO_TITLES titles everytime Internet connection is established
 	 */
 
 	String[] savedtitles = {
@@ -84,8 +84,14 @@ public class Home extends Activity
 		  // placeholder string array used to get the adapter
 		  String[] titlearray;
 		  // values which determine the number of threads which are launched and how frequently - it refers to article numbers
-		  int till=11,from=1;
+		  int till=NO_TITLES+1,from=1;
+		  // A variable to keep track of the number of JSON objects which have been received
+		  int nojson=0;
 
+		  
+		  //Global constants
+		  
+		  final static int NO_TITLES = 10;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -131,7 +137,7 @@ public class Home extends Activity
         //first_time=1;
 
         if(isNetworkConnected()){
-        	// launch threads to get 10 titles from latest article
+        	// launch threads to get NO_TITLES titles from latest article
             launchthreadstogettitles(till,from);
             toast("Internet available, fetching latest articles");
         }
@@ -153,17 +159,18 @@ public class Home extends Activity
     	  } else
     	   return true;
     }
-    //a function to get the next 10 articles
+    
+    //a function to get the next NO_TITLES articles
     public void update(View v){
     	if(!isNetworkConnected()){
     		toast("Fetching of articles Failed! No internet. ");
     		return;
     	}
-    	toast("Fetching next 10 articles");
+    	toast("Fetching next "+Integer.toString(NO_TITLES)+" articles");
     	//start from 11th latest article when this is first called, then for subsequent calls
     	from=till;
-    	// and get 10 articles from "till"
-    	till=from+10;
+    	// and get NO_TITLES articles from "till"
+    	till=from+NO_TITLES;
     	//And start the threads
     	launchthreadstogettitles(till,from);
     }
@@ -358,9 +365,15 @@ public class Home extends Activity
     //This is the method inherited from Mycallbackinterface, which is called by retriveJSON after it receives the JSON object.
 	@Override
 	public void onRequestCompleted(JSONObject result) {
-		//As atleast one title has loaded, we can change the footer's text
-		TextView footer =(TextView)findViewById(R.id.footer_1);
-		footer.setText("Fetch More Articles");
+		//we have got a JSON, update the count
+		nojson=nojson+1;
+		
+		//when NO_TITLES titles has loaded, we can change the footer's text
+		if(nojson==NO_TITLES){
+			TextView footer =(TextView)findViewById(R.id.footer_1);	
+			footer.setText("Fetch More Articles");
+		}
+		
 		// I got the JSON! i just used a interface! Communication complete!
 				if(result==null){
 					Log.i("debug","Json object's value is null");
