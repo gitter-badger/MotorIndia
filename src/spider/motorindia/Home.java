@@ -1,10 +1,16 @@
 package spider.motorindia;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import spider.motorindia.AsyncImageLoader.onImageLoaderListener;
 //this import establishes the link between this class and the "Retrivejson" class
 import spider.motorindia.Retrivejson.MyCallbackInterface;
 
@@ -14,15 +20,20 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +43,8 @@ import android.support.v4.widget.DrawerLayout;
 
 public class Home extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, MyCallbackInterface {
+
+	
 
 	//TODO
 	/*
@@ -108,6 +121,12 @@ public class Home extends Activity
 		  //Global constants
 		  // this is the number of titles that are fetched in groups
 		  final static int NO_TITLES = 10;
+		  //build version
+		  private final int SDK = Build.VERSION.SDK_INT;
+		  //For WHAT??
+		  public static String tmpResponseForUIDownload = "";
+		  public static Bitmap image;
+		  private FileOutputStream fos;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -160,7 +179,7 @@ public class Home extends Activity
         else{
         	toast("NO internet connection");
         }
-        
+ 
     }
     
     
@@ -194,7 +213,6 @@ public class Home extends Activity
     //a function to populate the list with titles from titles (as of now)
     public void populatelist(){
     	if(isNetworkConnected()){
-    		
     	   	//this sets up the dynamic array which is send to the adapter's constructor
             titlearray = titles.toArray(new String[titles.size()]);
         	//calls the constructor to set the title and imageid
@@ -303,11 +321,13 @@ public class Home extends Activity
         list=(ListView)findViewById(R.id.listView1);
         //TODO, find out WHY!!! passing null as the parent works.. i need to remove this link error OR explain it away
         View footerView = ((LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.footer_layout, null, false);
-        list.addFooterView(footerView);
-
+        list.addFooterView(footerView);	
+        
+        
         //as right now we have a single list for all these cases we call the function populatelist() (Right now no arguments because of that)
         //we only need to populate it once (on create the flag variable workaround is set thus using it we only call it the first time
         // the actionbar is drawn
+        // -1 tells them its a case where the cache is to be used
         populatelist();
         	//NOTE that this measure did not stop the issue #1 as predicted by me.
         	//i did not notice any noticeable change by bypassing the setting of the list over and over again.
@@ -401,7 +421,10 @@ public class Home extends Activity
 						}
 						//Just add the title to the titles array
 						titles.add(result.getString("title"));
-						//populate the list
+						//RISHI HAS TO MODIFY THE PRIMARY URL SO THAT I CAN START THE IMAGE DOWNLOAD IMMEDIATLY
+						//Retriveimage(result.getString("image"));
+						
+						//populate the list when the image comes in Retriveimage(link);
 				        populatelist();
 					} catch (JSONException e) {
 						// thats all folks
@@ -411,6 +434,58 @@ public class Home extends Activity
 				}
 
 			}
+
+
+
+	//downloads the image and saves it to the SD card
+	private void Retriveimage(String url) {
+		AsyncImageLoader loader = new AsyncImageLoader(
+				new onImageLoaderListener() {
+
+					@Override
+					public void onImageLoaded(Bitmap image,
+							String response) {
+						//btnSave.setEnabled(true);
+						
+						//TIME TO SAVE TO MEMORY
+						/*--- this method will save your downloaded image to SD card ---*/
+
+					    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+					    /*--- you can select your preferred CompressFormat and quality. 
+					     * I'm going to use JPEG and 100% quality ---*/
+					    image.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+					    /*--- create a new file on SD card ---*/
+					    File file = new File(Environment.getExternalStorageDirectory()
+					            + File.separator + "myDownloadedImage.jpg");
+					    try {
+					        file.createNewFile();
+					    } catch (IOException e) {
+					        e.printStackTrace();
+					    }
+					    /*--- create a new FileOutputStream and write bytes to file ---*/
+					    try {
+					        fos = new FileOutputStream(file);
+					    } catch (FileNotFoundException e) {
+					        e.printStackTrace();
+					    }
+					    try {
+					        fos.write(bytes.toByteArray());
+					        fos.close();
+					        
+					    } catch (IOException e) {
+					        e.printStackTrace();
+					    }
+						toast("gggg");
+					}
+
+				});
+		if (SDK >= 11)
+			loader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
+					url);
+		else
+			loader.execute(url);
+	}
+		
 
 }
 
