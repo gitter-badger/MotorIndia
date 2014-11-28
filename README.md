@@ -27,11 +27,11 @@ the app cache. We can click on the footer of the list to fetch the next 10 artic
 Screenshots
 -----------
 
-![App Startup](http://spider.nitt.edu/~adityap/resources/Motorindia/App_startup.png)
-![Navigation Drawer](http://spider.nitt.edu/~adityap/resources/Motorindia/Navigationdrawer.png)
-![Navigation Drawer](http://spider.nitt.edu/~adityap/resources/Motorindia/Navigationdrawerlandscape.png)
-![Main List View](http://spider.nitt.edu/~adityap/resources/Motorindia/MainListview.png)
-![Fetch More](http://spider.nitt.edu/~adityap/resources/Motorindia/fetchmore.png)
-![Fetching...](http://spider.nitt.edu/~adityap/resources/Motorindia/fetching.png)
+![App Startup](http://spider.nitt.edu/~adityap/resources/Motorindia/screenshots/App_startup.png)
+![Navigation Drawer](http://spider.nitt.edu/~adityap/resources/Motorindia/screenshots/Navigationdrawer.png)
+![Navigation Drawer](http://spider.nitt.edu/~adityap/resources/Motorindia/screenshots/Navigationdrawerlandscape.png)
+![Main List View](http://spider.nitt.edu/~adityap/resources/Motorindia/screenshots/MainListview.png)
+![Fetch More](http://spider.nitt.edu/~adityap/resources/Motorindia/screenshots/fetchmore.png)
+![Fetching...](http://spider.nitt.edu/~adityap/resources/Motorindia/screenshots/fetching.png)
 
 [1]: http://www.motorindiaonline.in/
