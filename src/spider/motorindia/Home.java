@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,6 +22,7 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -33,7 +36,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,7 +59,8 @@ public class Home extends Activity
 	UPDATE these values with the latest NO_TITLES titles everytime Internet connection is established
 	 */
 
-	String[] savedtitles = {
+	
+	String[] defaulttitles = {
 		      "	 Tata Motors joins hands with Microlise for advanced telematics and fleet management services",
 		      "	 Green manufacturing, a major challenge for emerging companies: Dr. Wilfried G. Aulbur",
 		      "	 JOST Group maintains technology leadership with new innovative products",
@@ -68,6 +71,9 @@ public class Home extends Activity
 		      "	 Apollo Tyres confirms Hungary as location for first greenfield facility outside India",
 		      "	 Volvo Buses remains unchallenged                                                     ",
 		  } ;
+	// the number of hardcoded titles
+	int notitles =9;
+	
 
 		  Integer[] imageId = {
 		      R.drawable.ic_launcher,
@@ -100,7 +106,9 @@ public class Home extends Activity
 
 		  //Due to the requirement for dynamic lists, ie add titles as we go down we need to
 		  ArrayList<String> titles = new ArrayList<String>();
-
+		  //where the cache of titles are stored when initially 
+		  Set<String> tempsavedtitles;
+		  String[] savedtitles;
 
 
 	//Global variables
@@ -123,6 +131,10 @@ public class Home extends Activity
 		  final static int NO_TITLES = 10;
 		  //build version
 		  private final int SDK = Build.VERSION.SDK_INT;
+		  //for cache of titles
+		  public static final String TITLES = "savedtitles";
+		  //for titles storage
+		  SharedPreferences title;
 		  //For WHAT??
 		  public static String tmpResponseForUIDownload = "";
 		  public static Bitmap image;
@@ -155,7 +167,6 @@ public class Home extends Activity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
 
-
         //now we draw up the list
         //populatelist();
         //TODO
@@ -171,6 +182,11 @@ public class Home extends Activity
         //in order to avoid the printing that a click has taken place.
         //first_time=1;
 
+        //we set the shared preferences variable to the approppriate key value pair
+    	title = getSharedPreferences(TITLES, 0);
+        //get the cache from the app storage and keep it ready for display
+        retrivecache();
+        
         if(isNetworkConnected()){
         	// launch threads to get NO_TITLES titles from latest article
             launchthreadstogettitles(till,from);
@@ -184,7 +200,23 @@ public class Home extends Activity
     
     
     
-    //a function to check if Internet is available
+    private void retrivecache() {
+    	Log.i("debug","retrive");
+    	// Here we need to restore saved titles with the titles actually shared in memory
+    	// get the default title list ready in case we don't get anything from the shared preferences
+    	Set<String> defaultsettitles=new HashSet<String>();;
+    	for(int i=1;i<notitles;i++){
+    		defaultsettitles.add(defaulttitles[notitles-i]);
+    	}
+    	//thus now restore them into a temp variable
+		tempsavedtitles=title.getStringSet("titles", defaultsettitles);
+		savedtitles=tempsavedtitles.toArray(new String[tempsavedtitles.size()]);
+		Log.i("debug","did all this");
+	}
+
+
+
+	//a function to check if Internet is available
     public boolean isNetworkConnected(){
     	ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
     	NetworkInfo ni = cm.getActiveNetworkInfo();
@@ -197,8 +229,9 @@ public class Home extends Activity
     
     //a function to get the next NO_TITLES articles
     public void update(View v){
+    	toast("Checking if Internet is available");
     	if(!isNetworkConnected()){
-    		toast("Fetching of articles Failed! No internet. ");
+    		toast("Fetching of articles Failed! No Internet. ");
     		return;
     	}
     	toast("Fetching next "+Integer.toString(NO_TITLES)+" articles");
@@ -215,6 +248,10 @@ public class Home extends Activity
     	if(isNetworkConnected()){
     	   	//this sets up the dynamic array which is send to the adapter's constructor
             titlearray = titles.toArray(new String[titles.size()]);
+            // Saves the fetched titles to the array for the future case when internet is not available
+            savedtitles=titlearray;
+            //should we call the Storetocache(titlearray); in onstop so that speed is saved?
+            Storetocache();
         	//calls the constructor to set the title and imageid
          	CustomList adapter = new CustomList(Home.this, titlearray, imageId);
          	//set "list" the handle, pointing to the respective views
@@ -223,20 +260,37 @@ public class Home extends Activity
     	}
     	else{
     		// As we don't have Internet connectivity
-
         	//calls the constructor to set the titles as the savedtitles and imageid
          	CustomList adapter = new CustomList(Home.this, savedtitles, imageId);
          	// set "list" the handle, pointing to the respective views
             list=(ListView)findViewById(R.id.listView1);
             list.setAdapter(adapter);
+            // set a more appropriate footer
+            TextView footer =(TextView)findViewById(R.id.footer_1);	
+			footer.setText("No internet - Cannot Load Articles");
+            
     	}
     	//As the first run is over
         first_time=0;
     }
 
-    //a function for toast
+    private void Storetocache() {
+    	Log.i("debug","Storing to caache");
+    	Set<String> tosaveset=new HashSet<String>();;
+    	for(int i=1;i<savedtitles.length;i++){
+    		tosaveset.add(savedtitles[i]);
+    	}
+		// This actually stores the latest titles to the shared preferences
+    	SharedPreferences.Editor editor = title.edit();
+        editor.putStringSet("titles", tosaveset);
+        // Commit the edits!
+        editor.commit();
+		
+	}
+
+	//a function for toast
     public void toast(String display){
-    	Toast.makeText(Home.this,display, Toast.LENGTH_LONG).show();
+    	Toast.makeText(Home.this,display, Toast.LENGTH_SHORT).show();
     }
 
     //the function which starts the threads which in turn get the titles and set them as soon as we get them in the onrequestcompleted function
@@ -417,6 +471,7 @@ public class Home extends Activity
 				else{
 					try {
 						if(first_time==1){
+							// reset the titles arraylist, as we are getting the latest titles from their server
 							titles.clear();
 						}
 						//Just add the title to the titles array

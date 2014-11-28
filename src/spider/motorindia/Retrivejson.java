@@ -15,7 +15,6 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 public class Retrivejson extends AsyncTask<String, Void, JSONObject> {
 
@@ -53,7 +52,7 @@ public class Retrivejson extends AsyncTask<String, Void, JSONObject> {
 				// NOW FINAL result holds the JSONArray
 				JSONArray finalResult = new JSONArray(tokener);
 
-				Log.i("debug",finalResult.getJSONObject(0).toString());
+				//Log.i("debug",finalResult.getJSONObject(0).toString());
 				//using .getJSONObject(0) we get the first JSON object
 				//and we return this JSONObject, ie the title of the article
 				return finalResult.getJSONObject(0);
