@@ -276,6 +276,8 @@ public class Home extends Activity
 
     private void Storetocache() {
     	Log.i("debug","Storing to caache");
+    	//BECAUSE WE ARE STOREING IN A SET, ORDER DOESNT MATTER THATS WHY 
+    	//WHEN THEY RESTORE THE THE LIST ITS ALL JUMBLED UP! TODO
     	Set<String> tosaveset=new HashSet<String>();;
     	for(int i=1;i<savedtitles.length;i++){
     		tosaveset.add(savedtitles[i]);
