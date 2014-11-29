@@ -2,44 +2,48 @@ package spider.motorindia;
 
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+public class CustomList extends ArrayAdapter<String> implements OnItemClickListener{
+private final Activity context;
+private final String[] title;
+private final Integer[] imageId;
 
-//THIS class is the one that defines the custom adapter
-public class CustomList extends ArrayAdapter<String>{
-	// the variables associated with the adapter
-	private final Activity context;
-	private final String[] web;
-	private final Integer[] imageId;
+//constructor of this class, this called when we initilize the adapter
+public CustomList(Activity context,String[] title, Integer[] imageId) {
+super(context, R.layout.single_line, title);
+this.context = context;
+this.title = title;
+this.imageId = imageId;
+}
 
-	//constructor which sets the adapter 
-	public CustomList(Activity context,String[] web, Integer[] imageId) {
-	super(context, R.layout.single_line, web);
-	this.context = context;
-	this.web = web;
-	this.imageId = imageId;
-	}
-	//this is called when the list is drawn up, sets the list line by line
-	@Override
-	public View getView(int position, View view, ViewGroup parent) {
-			
-	LayoutInflater inflater = context.getLayoutInflater();
-	//TODO LOOK INTO THIS ?!? read this - http://lucasr.org/2012/04/05/performance-tips-for-androids-listview/
-	View rowView= inflater.inflate(R.layout.single_line, null, true);
-	TextView txtTitle = (TextView) rowView.findViewById(R.id.text);
-	ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
-	txtTitle.setText(web[position]);
-	imageView.setImageResource(imageId[position]);
-	
-	return rowView;
-	
-	}
 
+@Override
+public View getView(int position, View view, ViewGroup parent) {
+LayoutInflater inflater = context.getLayoutInflater();
+View rowView= inflater.inflate(R.layout.single_line, null, true);
+TextView txtTitle = (TextView) rowView.findViewById(R.id.text);
+ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
+txtTitle.setText(title[position]);
+imageView.setImageResource(imageId[position]);
+return rowView;
+}
+
+@Override
+public void onItemClick(AdapterView<?> arg0, View v, int arg2, long arg3) {
+	// 
+	Log.i("debug",v.toString());
+	Log.i("debug","check");
 }
 	
 
+}
 

@@ -15,10 +15,9 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 public class Retrivejson extends AsyncTask<String, Void, JSONObject> {
-	
+
 	//i define the callback interface
     public interface MyCallbackInterface {
     	//its supposed to send the JSON object on request completed
@@ -32,13 +31,13 @@ public class Retrivejson extends AsyncTask<String, Void, JSONObject> {
     }
 
     public JSONObject getJSONFromUrl(String url) {
-    	
+
     	HttpClient client = new DefaultHttpClient();
-    	
+
 	    HttpGet httpGet = new HttpGet(url);
 
 	    HttpResponse response;
-	    
+
 			try {
 				//GET THE RESPONSE FROM THE GET REQUEST
 				response = client.execute(httpGet);
@@ -52,14 +51,14 @@ public class Retrivejson extends AsyncTask<String, Void, JSONObject> {
 				JSONTokener tokener = new JSONTokener(builder.toString());
 				// NOW FINAL result holds the JSONArray
 				JSONArray finalResult = new JSONArray(tokener);
-				
-				Log.i("debug",finalResult.getJSONObject(0).toString());
+
+				//Log.i("debug",finalResult.getJSONObject(0).toString());
 				//using .getJSONObject(0) we get the first JSON object
 				//and we return this JSONObject, ie the title of the article
 				return finalResult.getJSONObject(0);
-				
-				
-		        
+
+
+
 			} catch (IOException e) {
 				// Can't do more than the Auto-generated catch block
 				e.printStackTrace();
@@ -67,13 +66,13 @@ public class Retrivejson extends AsyncTask<String, Void, JSONObject> {
 				// Can't do more than the Auto-generated catch block
 				e.printStackTrace();
 			}
-	     
-		return null; 
+
+		return null;
     }
 
     @Override
     protected JSONObject doInBackground(String... params) {
-        String url = params[0];            
+        String url = params[0];
         return getJSONFromUrl(url);
     }
 

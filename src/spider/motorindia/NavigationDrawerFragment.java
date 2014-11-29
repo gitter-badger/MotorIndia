@@ -20,7 +20,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -97,9 +96,9 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        
+
         //ADDED THE TILE'S HERE SO THAT THE ADAPTER IS SET WITH THE ENTIRE LIST
-        
+
         mDrawerListView.setAdapter(new ArrayAdapter<String>(
                 getActionBar().getThemedContext(),
                 android.R.layout.simple_list_item_activated_1,
@@ -112,7 +111,7 @@ public class NavigationDrawerFragment extends Fragment {
 						getString(R.string.title_section5),
 						getString(R.string.title_section6),
 						getString(R.string.title_section7),}));
-        
+
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }
@@ -134,6 +133,7 @@ public class NavigationDrawerFragment extends Fragment {
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
+        //TODO
 
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -257,12 +257,9 @@ public class NavigationDrawerFragment extends Fragment {
       //TODO why can't I replace the "action_example" with "update" even though
       //both are properly defined strings in strings.xml i had to change the value of "action_example"
         if (item.getItemId() == R.id.action_example) {
-        	
-        	//"EXAMPLE ACTION" DOESNT SOUND GOOD 
-        	//TODO 
-        	//update the lists on this button click
-        	
-            Toast.makeText(getActivity(), "YOU can set something to happen on this event", Toast.LENGTH_SHORT).show();
+
+        	//"EXAMPLE ACTION" DOESNT SOUND GOOD
+        	//TODO
             return true;
         }
 
