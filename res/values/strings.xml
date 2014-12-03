@@ -2,17 +2,23 @@
 <resources>
 
     <string name="app_name">MotorIndia</string>
-	<string name="title_section1">Commercial Vehicles</string>
-    <string name="title_section2">Applications</string>
-    <string name="title_section3">Components</string>
+	<string name="title_section1">Trucks</string>
+    <string name="title_section2">Buses</string>
+    <string name="title_section3">Construction Equipment</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Update</string>
     <string name="action_settings">Settings</string>
-    <string name="title_section4">Aftermarket</string>
-    <string name="title_section5">Corporate</string>
-    <string name="title_section6">Upcoming Events</string>
-    <string name="title_section7">Subscribe</string>
+    <string name="title_section4">Applications</string>
+    <string name="title_section5">Components</string>
+    <string name="title_section6">Aftermarket</string>
+    <string name="title_section7">Tyres</string>
+    <string name="title_section8">Lubes &amp; Fuels</string>
+    <string name="title_section9">Batteries</string>
+    <string name="title_section10">Technology</string>
+    <string name="title_section11">Logistics</string>
+    <string name="title_section12">Dealer Corner</string>
+    <string name="title_section13">Events</string>
     <string name="update">Update</string>
     <string name="imagecontent">the respective images of the articles</string>
     <string name="footer_text_1">Fetching articles&#8230; Please wait&#8230;</string>

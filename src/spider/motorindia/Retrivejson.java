@@ -16,12 +16,12 @@ import org.json.JSONTokener;
 
 import android.os.AsyncTask;
 
-public class Retrivejson extends AsyncTask<String, Void, JSONObject> {
+public class Retrivejson extends AsyncTask<String, Void, JSONArray> {
 
 	//i define the callback interface
     public interface MyCallbackInterface {
     	//its supposed to send the JSON object on request completed
-        public void onRequestCompleted(JSONObject result);
+        public void onRequestCompleted(JSONArray result);
     }
 
     private MyCallbackInterface mCallback;
@@ -30,7 +30,7 @@ public class Retrivejson extends AsyncTask<String, Void, JSONObject> {
         mCallback = callback;
     }
 
-    public JSONObject getJSONFromUrl(String url) {
+    public JSONArray getJSONFromUrl(String url) {
 
     	HttpClient client = new DefaultHttpClient();
 
@@ -55,7 +55,7 @@ public class Retrivejson extends AsyncTask<String, Void, JSONObject> {
 				//Log.i("debug",finalResult.getJSONObject(0).toString());
 				//using .getJSONObject(0) we get the first JSON object
 				//and we return this JSONObject, ie the title of the article
-				return finalResult.getJSONObject(0);
+				return finalResult;
 
 
 
@@ -71,13 +71,13 @@ public class Retrivejson extends AsyncTask<String, Void, JSONObject> {
     }
 
     @Override
-    protected JSONObject doInBackground(String... params) {
+    protected JSONArray doInBackground(String... params) {
         String url = params[0];
         return getJSONFromUrl(url);
     }
 
     @Override
-    protected void onPostExecute(JSONObject result) {
+    protected void onPostExecute(JSONArray result) {
         //So that i have the JSON ready to use, i use the call back to send it to the 'customlist.java' ;)
         mCallback.onRequestCompleted(result);
     }

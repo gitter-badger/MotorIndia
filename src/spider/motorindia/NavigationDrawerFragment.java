@@ -97,7 +97,7 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
 
-        //ADDED THE TILE'S HERE SO THAT THE ADAPTER IS SET WITH THE ENTIRE LIST
+        //ADDED THE TITLE'S HERE SO THAT THE ADAPTER IS SET WITH THE ENTIRE LIST
 
         mDrawerListView.setAdapter(new ArrayAdapter<String>(
                 getActionBar().getThemedContext(),
@@ -110,7 +110,13 @@ public class NavigationDrawerFragment extends Fragment {
                         getString(R.string.title_section4),
 						getString(R.string.title_section5),
 						getString(R.string.title_section6),
-						getString(R.string.title_section7),}));
+						getString(R.string.title_section7),
+						getString(R.string.title_section8),
+                        getString(R.string.title_section9),
+                        getString(R.string.title_section10),
+                        getString(R.string.title_section11),
+						getString(R.string.title_section12),
+						getString(R.string.title_section13)}));
 
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;

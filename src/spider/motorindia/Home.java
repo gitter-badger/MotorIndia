@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -102,6 +103,32 @@ public class Home extends Activity
 		      R.drawable.ic_launcher,
 		      R.drawable.ic_launcher,
 		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
+		      R.drawable.ic_launcher,
 		  };
 
 		  //Due to the requirement for dynamic lists, ie add titles as we go down we need to
@@ -116,12 +143,14 @@ public class Home extends Activity
 		  ListView list;
 		  //Flag variable for keeping track whether the action bar is being drawn up for the First time
 		  int first_time=1;
+		  //Flag variable for keeping track whether the list should be cleared on next updation of the list
+		  int list_clear=1;
 		  //the variable which keeps track of how many titles have been fetched from the Internet
 		  int i=0;
 		  // placeholder string array used to get the adapter
 		  String[] titlearray;
 		  // values which determine the number of threads which are launched and how frequently - it refers to article numbers
-		  int till=NO_TITLES+1,from=1;
+		  int till=NO_TITLES,from=1;
 		  // A variable to keep track of the number of JSON objects which have been received
 		  int nojson=0;
 
@@ -148,7 +177,7 @@ public class Home extends Activity
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
-    private CharSequence mTitle;
+    public CharSequence mTitle;
 
 
     @Override
@@ -177,31 +206,33 @@ public class Home extends Activity
         of an array when there is no instance or array to use.
          */
 
-        // this is PART OF THE WORKAROUND (check out the TODOs)
-        // we need to make sure that even if the screen orientation changes the workaround integer variable is set back to 0
-        //in order to avoid the printing that a click has taken place.
-        //first_time=1;
-
         //we set the shared preferences variable to the approppriate key value pair
     	title = getSharedPreferences(TITLES, 0);
-        //get the cache from the app storage and keep it ready for display
-        retrivecache();
         
+        
+        //TODO if orientation changed, then dont call the whole thing again!
         if(isNetworkConnected()){
         	// launch threads to get NO_TITLES titles from latest article
-            launchthreadstogettitles(till,from);
+        	// As by default they are in Trucks section
+        	if(first_time==1){
+        		//no need to do this the task is launched from the action bar override 
+        		launchthreadstogettitles(till,from,"Trucks");
+        	}
             toast("Internet available, fetching latest articles");
         }
         else{
+        	//get the cache from the app storage and keep it ready for display
+            retrivecache();
         	toast("NO internet connection");
+        	populatelist();
         }
  
     }
     
     
-    
+    // the function which retrieves the last saved titles and stores for use in case there is no internet
     private void retrivecache() {
-    	Log.i("debug","retrive");
+    	
     	// Here we need to restore saved titles with the titles actually shared in memory
     	// get the default title list ready in case we don't get anything from the shared preferences
     	Set<String> defaultsettitles=new HashSet<String>();;
@@ -211,7 +242,6 @@ public class Home extends Activity
     	//thus now restore them into a temp variable
 		tempsavedtitles=title.getStringSet("titles", defaultsettitles);
 		savedtitles=tempsavedtitles.toArray(new String[tempsavedtitles.size()]);
-		Log.i("debug","did all this");
 	}
 
 
@@ -236,11 +266,11 @@ public class Home extends Activity
     	}
     	toast("Fetching next "+Integer.toString(NO_TITLES)+" articles");
     	//start from 11th latest article when this is first called, then for subsequent calls
-    	from=till;
+    	from=till+1;
     	// and get NO_TITLES articles from "till"
-    	till=from+NO_TITLES;
+    	till=from+NO_TITLES-1;
     	//And start the threads
-    	launchthreadstogettitles(till,from);
+    	launchthreadstogettitles(till,from,mTitle.toString());
     }
 
     //a function to populate the list with titles from titles (as of now)
@@ -248,7 +278,7 @@ public class Home extends Activity
     	if(isNetworkConnected()){
     	   	//this sets up the dynamic array which is send to the adapter's constructor
             titlearray = titles.toArray(new String[titles.size()]);
-            // Saves the fetched titles to the array for the future case when internet is not available
+            // Saves the fetched titles to the array for the future case when Internet is not available
             savedtitles=titlearray;
             //should we call the Storetocache(titlearray); in onstop so that speed is saved?
             Storetocache();
@@ -262,6 +292,7 @@ public class Home extends Activity
     		// As we don't have Internet connectivity
         	//calls the constructor to set the titles as the savedtitles and imageid
          	CustomList adapter = new CustomList(Home.this, savedtitles, imageId);
+        	Log.i("debug", "no prob");
          	// set "list" the handle, pointing to the respective views
             list=(ListView)findViewById(R.id.listView1);
             list.setAdapter(adapter);
@@ -274,6 +305,8 @@ public class Home extends Activity
         first_time=0;
     }
 
+    //Store to cache At the end of the activity's lifecycle
+    //TODO and do it properly
     private void Storetocache() {
     	Log.i("debug","Storing to caache");
     	//BECAUSE WE ARE STOREING IN A SET, ORDER DOESNT MATTER THATS WHY 
@@ -296,11 +329,10 @@ public class Home extends Activity
     }
 
     //the function which starts the threads which in turn get the titles and set them as soon as we get them in the onrequestcompleted function
-    public void launchthreadstogettitles(int number, int start){
-    	for(int i=start;i<number;i++){
-			String link = "http://motorindiaonline.in/android/?s_i="+Integer.toString(i)+"&e_i="+Integer.toString(i);
-			new Retrivejson(this).execute(link);
-		}
+    public void launchthreadstogettitles(int end, int start, String category ){
+    	String link = "http://motorindiaonline.in/mobapp/?s_i="+Integer.toString(start)+"&e_i="+Integer.toString(end)+"&cat_i="+category;
+		new Retrivejson(this).execute(link);
+		
     }
 
     @Override
@@ -335,6 +367,25 @@ public class Home extends Activity
     		case 7:
     			mTitle = getString(R.string.title_section7);
     			break;
+    		case 8:
+    			mTitle = getString(R.string.title_section8);
+    			break;
+    		case 9:
+                mTitle = getString(R.string.title_section9);
+                break;
+            case 10:
+                mTitle = getString(R.string.title_section10);
+                break;
+            case 11:
+                mTitle = getString(R.string.title_section11);
+                break;
+            case 12:
+    			mTitle = getString(R.string.title_section12);
+    			break;
+    		case 13:
+    			mTitle = getString(R.string.title_section13);
+    			break;
+    		
         }
     }
 
@@ -351,40 +402,46 @@ public class Home extends Activity
         //we also check if this is the first time, during oncreate when the action bar is set, if so, we shouldn't
         //trigger the toast prompting the user that a touch event has taken place
         if(mTitle==getString(R.string.title_section1) && first_time!=1){
-        	toast(getString(R.string.title_section1));
         	//as the application initializes the action bar it checks which title is currently is on and due to the workaround alerts the user
         	//that a click has been registered
         }
         else if(mTitle==getString(R.string.title_section2)){
-        	toast(getString(R.string.title_section2));
+        	
         }
         else if(mTitle==getString(R.string.title_section3)){
-        	toast(getString(R.string.title_section3));
+        	
         }
         else if(mTitle==getString(R.string.title_section4)){
-        	toast(getString(R.string.title_section4));
+        	
         }
         else if(mTitle==getString(R.string.title_section5)){
-        	toast(getString(R.string.title_section5));
+        	
         }
         else if(mTitle==getString(R.string.title_section6)){
-        	toast(getString(R.string.title_section6));
+        	
         }
         else if(mTitle==getString(R.string.title_section7)){
-        	toast(getString(R.string.title_section7));
+        	
         }
+        // because we dont want the last sections's titles to remain in the listview we set it to clear by
+        list_clear=1;
+        if(first_time==0){
+        	// And we launch the thread to get the json for the
+            launchthreadstogettitles(till, from, mTitle.toString());
+            //We are already doing this in on create, no need to do it twice. Also in case of no internet
+            // this line will cause the app to crash
+        }
+        
         //set "list" the handle, pointing to the respective views
         list=(ListView)findViewById(R.id.listView1);
         //TODO, find out WHY!!! passing null as the parent works.. i need to remove this link error OR explain it away
         View footerView = ((LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.footer_layout, null, false);
         list.addFooterView(footerView);	
         
-        
         //as right now we have a single list for all these cases we call the function populatelist() (Right now no arguments because of that)
         //we only need to populate it once (on create the flag variable workaround is set thus using it we only call it the first time
         // the actionbar is drawn
-        // -1 tells them its a case where the cache is to be used
-        populatelist();
+
         	//NOTE that this measure did not stop the issue #1 as predicted by me.
         	//i did not notice any noticeable change by bypassing the setting of the list over and over again.
     }
@@ -456,39 +513,36 @@ public class Home extends Activity
 
     //This is the method inherited from Mycallbackinterface, which is called by retriveJSON after it receives the JSON object.
 	@Override
-	public void onRequestCompleted(JSONObject result) {
-		//we have got a JSON, update the count
-		nojson=nojson+1;
+	public void onRequestCompleted(JSONArray result) {
+		//we have got a whole JSONArray, update the count
+		nojson=nojson+NO_TITLES;
 		
-		//when NO_TITLES titles has loaded, we can change the footer's text
-		if(nojson==NO_TITLES){
-			TextView footer =(TextView)findViewById(R.id.footer_1);	
-			footer.setText("Fetch More Articles");
-		}
+		//when the JSON array  titles has loaded, we can change the footer's text
+		TextView footer =(TextView)findViewById(R.id.footer_1);	
+		footer.setText("Fetch More Articles");
+		
 		
 		// I got the JSON! i just used a interface! Communication complete!
-				if(result==null){
-					Log.i("debug","Json object's value is null");
-				}
-				else{
-					try {
-						if(first_time==1){
-							// reset the titles arraylist, as we are getting the latest titles from their server
-							titles.clear();
-						}
-						//Just add the title to the titles array
-						titles.add(result.getString("title"));
-						//RISHI HAS TO MODIFY THE PRIMARY URL SO THAT I CAN START THE IMAGE DOWNLOAD IMMEDIATLY
-						//Retriveimage(result.getString("image"));
+		if(list_clear==1){
+			// reset the titles arraylist, as we are getting the latest titles from their server
+			titles.clear();
+			list_clear=0;
+			}
+		for(int i=from-1;i<till;i++){
+			try {
+				//Just add the titles to the titles array
+				titles.add(result.getJSONObject(i).getString("title"));
+				//fetch the image
+				//Retriveimage(result.getJSONObject(i).getString("image"));
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			}
+		
 						
-						//populate the list when the image comes in Retriveimage(link);
-				        populatelist();
-					} catch (JSONException e) {
-						// thats all folks
-						e.printStackTrace();
-						Log.i("debug","it aint null but its a JSONException");
-					}
-				}
+		//populate the list when the image comes in Retriveimage(link); ?
+		populatelist();
 
 			}
 
@@ -545,5 +599,6 @@ public class Home extends Activity
 		
 
 }
+
 
 
