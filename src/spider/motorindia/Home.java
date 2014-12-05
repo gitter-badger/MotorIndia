@@ -266,11 +266,17 @@ public class Home extends Activity
     	}
     	toast("Fetching next "+Integer.toString(NO_TITLES)+" articles");
     	//start from 11th latest article when this is first called, then for subsequent calls
-    	from=till+1;
-    	// and get NO_TITLES articles from "till"
-    	till=from+NO_TITLES-1;
+    	from=from+10;
+    	// and get NO_TITLES articles from "from"
+    	till=NO_TITLES;
     	//And start the threads
-    	launchthreadstogettitles(till,from,mTitle.toString());
+    	if(mTitle.toString()==getString(R.string.title_section3)){
+    		Log.i("debug","avoided space in url");
+    		launchthreadstogettitles(till, from, "ConstructionEquipment");
+    	}
+    	else{
+        launchthreadstogettitles(till, from, mTitle.toString());
+    	}
     }
 
     //a function to populate the list with titles from titles (as of now)
@@ -329,8 +335,8 @@ public class Home extends Activity
     }
 
     //the function which starts the threads which in turn get the titles and set them as soon as we get them in the onrequestcompleted function
-    public void launchthreadstogettitles(int end, int start, String category ){
-    	String link = "http://motorindiaonline.in/mobapp/?s_i="+Integer.toString(start)+"&e_i="+Integer.toString(end)+"&cat_i="+category;
+    public void launchthreadstogettitles(int no, int start, String category ){
+    	String link = "http://motorindiaonline.in/mobapp/?s_i="+Integer.toString(start)+"&e_i="+Integer.toString(no)+"&cat_i="+category;
 		new Retrivejson(this).execute(link);
 		
     }
@@ -426,10 +432,15 @@ public class Home extends Activity
         // because we dont want the last sections's titles to remain in the listview we set it to clear by
         list_clear=1;
         if(first_time==0){
+        	if(mTitle.toString()==getString(R.string.title_section3)){
+        		launchthreadstogettitles(till, from, "ConstructionEquipment");
+        	}
+        	else{
         	// And we launch the thread to get the json for the
             launchthreadstogettitles(till, from, mTitle.toString());
             //We are already doing this in on create, no need to do it twice. Also in case of no internet
             // this line will cause the app to crash
+        	}
         }
         
         //set "list" the handle, pointing to the respective views
