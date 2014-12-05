@@ -1,7 +1,6 @@
 package spider.motorindia;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.json.JSONArray;
@@ -12,15 +11,17 @@ import spider.motorindia.Retrivejson.MyCallbackInterface;
 
 import android.app.Activity;
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.util.Log;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -132,7 +133,7 @@ public class Home extends Activity
 		  // placeholder string array used to get the adapter
 		  String[] titlearray;
 		  // values which determine the number of threads which are launched and how frequently - it refers to article numbers
-		  int till=NO_TITLES,from=1;
+		  int no=NO_TITLES,from=1;
 		  // A variable to keep track of the number of JSON objects which have been received
 		  int nojson=0;
 		  // to keep track of orientation change
@@ -143,11 +144,6 @@ public class Home extends Activity
 		  //Global constants
 		  // this is the number of titles that are fetched in groups
 		  final static int NO_TITLES = 10;
-		  //for cache of titles
-		  public static final String TITLES = "savedtitles";
-		  //for titles storage
-		  SharedPreferences title;
-
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -184,9 +180,7 @@ public class Home extends Activity
         else{
         	orientation_same=0;
         }
-        
-        //now we draw up the list
-        //populatelist();
+
         //TODO
         /*
          * We are unable to draw up the list in Oncreate(), the error thrown is a
@@ -195,47 +189,48 @@ public class Home extends Activity
         of an array when there is no such instance or array to use.
          */
 
-        //we set the shared preferences variable to the approppriate key value pair
-    	title = getSharedPreferences(TITLES, 0);
-        
-        
         //TODO if orientation changed, then dont call the whole thing again!
         if(isNetworkConnected()){
         	// launch threads to get NO_TITLES titles from latest article
         	// As by default they are in Trucks section
         	if(first_time==1){
-        		toast("Internet available, fetching latest articles");
         		//no need to do this the task is launched from the action bar override 
-        		launchthreadstogettitles(till,from,"Trucks");
-        	}
-        	else{
-        		
+        		launchthreadstogettitles(no,from,"Trucks");
         	}
             
         }
         else{
-        	
-        	//get the cache from the app storage and keep it ready for display
-            retrivecache();
+        	createNetErrorDialog();
         	toast("NO internet connection");
         }
  
     }
     
+    protected void createNetErrorDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("You need a network connection to use this application. Please turn on mobile network or Wi-Fi in Settings.")
+            .setTitle("Unable to connect")
+            .setCancelable(false)
+            .setPositiveButton("Settings",
+            new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Intent i = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+                    startActivity(i);
+                }
+            }
+        )
+        .setNegativeButton("Cancel",
+            new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Home.this.finish();
+                }
+            }
+        );
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
     
-    // the function which retrieves the last saved titles and stores for use in case there is no internet
-    private void retrivecache() {
-    	
-    	// Here we need to restore saved titles with the titles actually shared in memory
-    	// get the default title list ready in case we don't get anything from the shared preferences
-    	Set<String> defaultsettitles=new HashSet<String>();
-    	for(int i=1;i<notitles;i++){
-    		defaultsettitles.add(defaulttitles[notitles-i]);
-    	}
-    	//thus now restore them into a temp variable
-		tempsavedtitles=title.getStringSet("titles", defaultsettitles);
-		savedtitles=tempsavedtitles.toArray(new String[tempsavedtitles.size()]);
-	}
 
 
 
@@ -261,26 +256,24 @@ public class Home extends Activity
     	//start from 11th latest article when this is first called, then for subsequent calls
     	from=from+10;
     	// and get NO_TITLES articles from "from"
-    	till=NO_TITLES;
+    	no=NO_TITLES;
     	//And start the threads
     	if(mTitle.toString()==getString(R.string.title_section3)){
-    		Log.i("debug","avoided space in url");
-    		launchthreadstogettitles(till, from, "ConstructionEquipment");
+    		launchthreadstogettitles(no, from, "ConstructionEquipment");
     	}
     	else{
-        launchthreadstogettitles(till, from, mTitle.toString());
+        launchthreadstogettitles(no, from, mTitle.toString());
     	}
     }
 
     //a function to populate the list with titles from titles (as of now)
     public void populatelist(){
+    	
     	if(isNetworkConnected()){
     	   	//this sets up the dynamic array which is send to the adapter's constructor
             titlearray = titles.toArray(new String[titles.size()]);
             // Saves the fetched titles to the array for the future case when Internet is not available
             savedtitles=titlearray;
-            //should we call the Storetocache(titlearray); in onstop so that speed is saved?
-            Storetocache();
             String[] imageurl = images.toArray(new String[images.size()]);
         	//calls the constructor to set the title and imageid
          	CustomList adapter = new CustomList(Home.this, titlearray, imageId, imageurl);
@@ -292,7 +285,6 @@ public class Home extends Activity
     		// As we don't have Internet connectivity
         	//calls the constructor to set the titles as the savedtitles and imageid
          	CustomList adapter = new CustomList(Home.this, savedtitles, imageId, null);
-        	Log.i("debug", "no prob");
          	// set "list" the handle, pointing to the respective views
             list=(ListView)findViewById(R.id.listView1);
             list.setAdapter(adapter);
@@ -304,24 +296,6 @@ public class Home extends Activity
     	//As the first run is over
         first_time=0;
     }
-
-    //Store to cache At the end of the activity's lifecycle
-    //TODO and do it properly
-    private void Storetocache() {
-    	Log.i("debug","Storing to caache");
-    	//BECAUSE WE ARE STOREING IN A SET, ORDER DOESNT MATTER THATS WHY 
-    	//WHEN THEY RESTORE THE THE LIST ITS ALL JUMBLED UP! TODO
-    	Set<String> tosaveset=new HashSet<String>();
-    	for(int i=1;i<savedtitles.length;i++){
-    		tosaveset.add(savedtitles[i]);
-    	}
-		// This actually stores the latest titles to the shared preferences
-    	SharedPreferences.Editor editor = title.edit();
-        editor.putStringSet("titles", tosaveset);
-        // Commit the edits!
-        editor.commit();
-		
-	}
 
 	//a function for toast
     public void toast(String display){
@@ -394,7 +368,7 @@ public class Home extends Activity
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
-
+        
 		//TODO
         //AFTER A LOT OF WORK, @vishnugt has found a workaround, a fix to inflate the listview
         //different values will be used to populate the list when different options are selected
@@ -423,23 +397,29 @@ public class Home extends Activity
         else if(mTitle==getString(R.string.title_section7)){
         	
         }
+        
         if(isNetworkConnected()){
         // because we dont want the last sections's titles to remain in the listview we set it to clear by
         list_clear=1;
         if(first_time==0){
         	if(mTitle.toString()==getString(R.string.title_section3)){
-        		launchthreadstogettitles(till, from, "ConstructionEquipment");
+        		launchthreadstogettitles(no, from, "ConstructionEquipment");
+        	}
+        	else if(mTitle.toString()==getString(R.string.title_section8)){
+        		launchthreadstogettitles(no, from, "Lubes");
         	}
         	else{
-        	// And we launch the thread to get the json for the
-            launchthreadstogettitles(till, from, mTitle.toString());
+        		
+        	// And we launch the thread to get the JSON for the
+            launchthreadstogettitles(no, from, mTitle.toString());
             //We are already doing this in on create, no need to do it twice. Also in case of no internet
             // this line will cause the app to crash
         	}
         }
     }
         else{
-           populatelist();
+        	createNetErrorDialog();
+           //populatelist();
         }
         if(orientation_same==1){
         	//set "list" the handle, pointing to the respective views
@@ -533,15 +513,14 @@ public class Home extends Activity
 		TextView footer =(TextView)findViewById(R.id.footer_1);	
 		footer.setText("Fetch More Articles");
 		
-		
-		// I got the JSON! i just used a interface! Communication complete!
+ 		// I got the JSON! i just used a interface! Communication complete!
 		if(list_clear==1){
 			// reset the titles arraylist, as we are getting the latest titles from their server
 			titles.clear();
 			images.clear();
 			list_clear=0;
 			}
-		for(int i=from-1;i<till;i++){
+		for(int i=0;i<no;i++){
 			try {
 				//Just add the titles to the titles array
 				titles.add(result.getJSONObject(i).getString("title"));

@@ -22,7 +22,6 @@ private final String[] imageurl;
 //constructor of this class, this called when we initilize the adapter
 public CustomList(Activity context,String[] title, Integer[] imageId, String[] imageurl) {
 super(context, R.layout.single_line, title);
-Log.i("debug","check1");
 this.context = context;
 this.title = title;
 this.imageId = imageId;
@@ -43,7 +42,7 @@ if(imageurl==null){
 }
 else{
 	ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
-	Picasso.with(context).load(imageurl[position]).resize(200, 150).into(imageView);
+	Picasso.with(context).load(imageurl[position]).placeholder(R.drawable.ic_launcher).error(R.drawable.error).resize(200, 150).into(imageView);
 	
 }
 txtTitle.setText(title[position]);
