@@ -1,36 +1,25 @@
 package spider.motorindia;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import spider.motorindia.AsyncImageLoader.onImageLoaderListener;
 //this import establishes the link between this class and the "Retrivejson" class
 import spider.motorindia.Retrivejson.MyCallbackInterface;
 
 import android.app.Activity;
-
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -75,16 +64,7 @@ public class Home extends Activity
 	// the number of hardcoded titles
 	int notitles =9;
 	
-
-		  Integer[] imageId = {
-		      R.drawable.ic_launcher,
-		      R.drawable.ic_launcher,
-		      R.drawable.ic_launcher,
-		      R.drawable.ic_launcher,
-		      R.drawable.ic_launcher,
-		      R.drawable.ic_launcher,
-		      R.drawable.ic_launcher,
-		      R.drawable.ic_launcher,
+		 Integer[] imageId = {
 		      R.drawable.ic_launcher,
 		      R.drawable.ic_launcher,
 		      R.drawable.ic_launcher,
@@ -133,6 +113,8 @@ public class Home extends Activity
 
 		  //Due to the requirement for dynamic lists, ie add titles as we go down we need to
 		  ArrayList<String> titles = new ArrayList<String>();
+		  // Same thing, we need a dynamic list for images
+		  ArrayList<String> images = new ArrayList<String>();
 		  //where the cache of titles are stored when initially 
 		  Set<String> tempsavedtitles;
 		  String[] savedtitles;
@@ -153,21 +135,18 @@ public class Home extends Activity
 		  int till=NO_TITLES,from=1;
 		  // A variable to keep track of the number of JSON objects which have been received
 		  int nojson=0;
+		  // to keep track of orientation change
+		  int orientation_same = 1;
+		  int orientation = -1;
 
 		  
 		  //Global constants
 		  // this is the number of titles that are fetched in groups
 		  final static int NO_TITLES = 10;
-		  //build version
-		  private final int SDK = Build.VERSION.SDK_INT;
 		  //for cache of titles
 		  public static final String TITLES = "savedtitles";
 		  //for titles storage
 		  SharedPreferences title;
-		  //For WHAT??
-		  public static String tmpResponseForUIDownload = "";
-		  public static Bitmap image;
-		  private FileOutputStream fos;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -195,7 +174,17 @@ public class Home extends Activity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-
+        Configuration config = getResources().getConfiguration();
+        if(orientation==-1){
+        	orientation = config.orientation;
+        }
+        else if(orientation == config.orientation){
+        	orientation_same=1;
+        }
+        else{
+        	orientation_same=0;
+        }
+        
         //now we draw up the list
         //populatelist();
         //TODO
@@ -203,7 +192,7 @@ public class Home extends Activity
          * We are unable to draw up the list in Oncreate(), the error thrown is a
         runtime exception - nullpointerexeption
         ie we somehow tried to access a field or method of an object or an element
-        of an array when there is no instance or array to use.
+        of an array when there is no such instance or array to use.
          */
 
         //we set the shared preferences variable to the approppriate key value pair
@@ -215,16 +204,20 @@ public class Home extends Activity
         	// launch threads to get NO_TITLES titles from latest article
         	// As by default they are in Trucks section
         	if(first_time==1){
+        		toast("Internet available, fetching latest articles");
         		//no need to do this the task is launched from the action bar override 
         		launchthreadstogettitles(till,from,"Trucks");
         	}
-            toast("Internet available, fetching latest articles");
+        	else{
+        		
+        	}
+            
         }
         else{
+        	
         	//get the cache from the app storage and keep it ready for display
             retrivecache();
         	toast("NO internet connection");
-        	populatelist();
         }
  
     }
@@ -235,7 +228,7 @@ public class Home extends Activity
     	
     	// Here we need to restore saved titles with the titles actually shared in memory
     	// get the default title list ready in case we don't get anything from the shared preferences
-    	Set<String> defaultsettitles=new HashSet<String>();;
+    	Set<String> defaultsettitles=new HashSet<String>();
     	for(int i=1;i<notitles;i++){
     		defaultsettitles.add(defaulttitles[notitles-i]);
     	}
@@ -288,8 +281,9 @@ public class Home extends Activity
             savedtitles=titlearray;
             //should we call the Storetocache(titlearray); in onstop so that speed is saved?
             Storetocache();
+            String[] imageurl = images.toArray(new String[images.size()]);
         	//calls the constructor to set the title and imageid
-         	CustomList adapter = new CustomList(Home.this, titlearray, imageId);
+         	CustomList adapter = new CustomList(Home.this, titlearray, imageId, imageurl);
          	//set "list" the handle, pointing to the respective views
             list=(ListView)findViewById(R.id.listView1);
             list.setAdapter(adapter);
@@ -297,7 +291,7 @@ public class Home extends Activity
     	else{
     		// As we don't have Internet connectivity
         	//calls the constructor to set the titles as the savedtitles and imageid
-         	CustomList adapter = new CustomList(Home.this, savedtitles, imageId);
+         	CustomList adapter = new CustomList(Home.this, savedtitles, imageId, null);
         	Log.i("debug", "no prob");
          	// set "list" the handle, pointing to the respective views
             list=(ListView)findViewById(R.id.listView1);
@@ -317,7 +311,7 @@ public class Home extends Activity
     	Log.i("debug","Storing to caache");
     	//BECAUSE WE ARE STOREING IN A SET, ORDER DOESNT MATTER THATS WHY 
     	//WHEN THEY RESTORE THE THE LIST ITS ALL JUMBLED UP! TODO
-    	Set<String> tosaveset=new HashSet<String>();;
+    	Set<String> tosaveset=new HashSet<String>();
     	for(int i=1;i<savedtitles.length;i++){
     		tosaveset.add(savedtitles[i]);
     	}
@@ -429,6 +423,7 @@ public class Home extends Activity
         else if(mTitle==getString(R.string.title_section7)){
         	
         }
+        if(isNetworkConnected()){
         // because we dont want the last sections's titles to remain in the listview we set it to clear by
         list_clear=1;
         if(first_time==0){
@@ -442,12 +437,18 @@ public class Home extends Activity
             // this line will cause the app to crash
         	}
         }
+    }
+        else{
+           populatelist();
+        }
+        if(orientation_same==1){
+        	//set "list" the handle, pointing to the respective views
+            list=(ListView)findViewById(R.id.listView1);
+            //TODO, find out WHY!!! passing null as the parent works.. i need to remove this link error OR explain it away
+            View footerView = ((LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.footer_layout, null, false);
+            list.addFooterView(footerView);	
+        }
         
-        //set "list" the handle, pointing to the respective views
-        list=(ListView)findViewById(R.id.listView1);
-        //TODO, find out WHY!!! passing null as the parent works.. i need to remove this link error OR explain it away
-        View footerView = ((LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.footer_layout, null, false);
-        list.addFooterView(footerView);	
         
         //as right now we have a single list for all these cases we call the function populatelist() (Right now no arguments because of that)
         //we only need to populate it once (on create the flag variable workaround is set thus using it we only call it the first time
@@ -528,7 +529,7 @@ public class Home extends Activity
 		//we have got a whole JSONArray, update the count
 		nojson=nojson+NO_TITLES;
 		
-		//when the JSON array  titles has loaded, we can change the footer's text
+		//when the JSON array  titles has loaded, we can change the footer's text to reflect the fact we can fetch more article
 		TextView footer =(TextView)findViewById(R.id.footer_1);	
 		footer.setText("Fetch More Articles");
 		
@@ -537,14 +538,16 @@ public class Home extends Activity
 		if(list_clear==1){
 			// reset the titles arraylist, as we are getting the latest titles from their server
 			titles.clear();
+			images.clear();
 			list_clear=0;
 			}
 		for(int i=from-1;i<till;i++){
 			try {
 				//Just add the titles to the titles array
 				titles.add(result.getJSONObject(i).getString("title"));
-				//fetch the image
-				//Retriveimage(result.getJSONObject(i).getString("image"));
+				//fetch the image URL store it
+				images.add(result.getJSONObject(i).getString("image"));
+				
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -552,64 +555,9 @@ public class Home extends Activity
 			}
 		
 						
-		//populate the list when the image comes in Retriveimage(link); ?
+		//populate the list with the fetched data
 		populatelist();
 
 			}
 
-
-
-	//downloads the image and saves it to the SD card
-	private void Retriveimage(String url) {
-		AsyncImageLoader loader = new AsyncImageLoader(
-				new onImageLoaderListener() {
-
-					@Override
-					public void onImageLoaded(Bitmap image,
-							String response) {
-						//btnSave.setEnabled(true);
-						
-						//TIME TO SAVE TO MEMORY
-						/*--- this method will save your downloaded image to SD card ---*/
-
-					    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-					    /*--- you can select your preferred CompressFormat and quality. 
-					     * I'm going to use JPEG and 100% quality ---*/
-					    image.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-					    /*--- create a new file on SD card ---*/
-					    File file = new File(Environment.getExternalStorageDirectory()
-					            + File.separator + "myDownloadedImage.jpg");
-					    try {
-					        file.createNewFile();
-					    } catch (IOException e) {
-					        e.printStackTrace();
-					    }
-					    /*--- create a new FileOutputStream and write bytes to file ---*/
-					    try {
-					        fos = new FileOutputStream(file);
-					    } catch (FileNotFoundException e) {
-					        e.printStackTrace();
-					    }
-					    try {
-					        fos.write(bytes.toByteArray());
-					        fos.close();
-					        
-					    } catch (IOException e) {
-					        e.printStackTrace();
-					    }
-						toast("gggg");
-					}
-
-				});
-		if (SDK >= 11)
-			loader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
-					url);
-		else
-			loader.execute(url);
-	}
-		
-
 }
-
-
-

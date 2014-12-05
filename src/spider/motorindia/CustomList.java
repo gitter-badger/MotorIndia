@@ -1,11 +1,12 @@
 package spider.motorindia;
 
 
+import com.squareup.picasso.Picasso;
+
 import android.app.Activity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -16,24 +17,36 @@ public class CustomList extends ArrayAdapter<String> implements OnItemClickListe
 private final Activity context;
 private final String[] title;
 private final Integer[] imageId;
+private final String[] imageurl;
 
 //constructor of this class, this called when we initilize the adapter
-public CustomList(Activity context,String[] title, Integer[] imageId) {
+public CustomList(Activity context,String[] title, Integer[] imageId, String[] imageurl) {
 super(context, R.layout.single_line, title);
+Log.i("debug","check1");
 this.context = context;
 this.title = title;
 this.imageId = imageId;
+this.imageurl = imageurl;
 }
 
 
 @Override
 public View getView(int position, View view, ViewGroup parent) {
+	Log.i("debug","check");
 LayoutInflater inflater = context.getLayoutInflater();
 View rowView= inflater.inflate(R.layout.single_line, null, true);
 TextView txtTitle = (TextView) rowView.findViewById(R.id.text);
-ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
+
+if(imageurl==null){
+	ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
+	imageView.setImageResource(imageId[position]);
+}
+else{
+	ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
+	Picasso.with(context).load(imageurl[position]).resize(200, 150).into(imageView);
+	
+}
 txtTitle.setText(title[position]);
-imageView.setImageResource(imageId[position]);
 return rowView;
 }
 
@@ -41,7 +54,6 @@ return rowView;
 public void onItemClick(AdapterView<?> arg0, View v, int arg2, long arg3) {
 	// 
 	Log.i("debug",v.toString());
-	Log.i("debug","check");
 }
 	
 
