@@ -426,7 +426,9 @@ public class Home extends Activity
         		toast("sorry under construction... ");
         	}
         	else if(mTitle.toString()==getString(R.string.title_section8)){
-        		launchthreadstogettitles(no, from, "Lubes");
+        		//launchthreadstogettitles(no, from, "Lubes");
+        		//causing crash!!
+        		toast("sorry under construction... ");
         	}
         	else{
         		
