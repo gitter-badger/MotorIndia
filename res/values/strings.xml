@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">MotorIndia</string>
-	<string name="title_section1">Trucks</string>
+    <string name="title_section1">Trucks</string>
     <string name="title_section2">Buses</string>
     <string name="title_section3">Construction Equipment</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -19,9 +19,11 @@
     <string name="title_section10">Technology</string>
     <string name="title_section11">Logistics</string>
     <string name="title_section12">Dealer Corner</string>
-    <string name="title_section13">Events</string>
+    <string name="title_section13">Events_Fetching articles&#8230; Please wait&#8230;</string>
     <string name="update">Update</string>
     <string name="imagecontent">the respective images of the articles</string>
-    <string name="footer_text_1">Fetching articles&#8230; Please wait&#8230;</string>
+    <string name="footer_text_1">Fetch more articles</string>
+    <string name="title_activity_displayarticle">Displayarticle</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>

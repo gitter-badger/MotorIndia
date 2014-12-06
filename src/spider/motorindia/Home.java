@@ -27,6 +27,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -116,6 +118,8 @@ public class Home extends Activity
 		  ArrayList<String> titles = new ArrayList<String>();
 		  // Same thing, we need a dynamic list for images
 		  ArrayList<String> images = new ArrayList<String>();
+		  // Similarly we need the list of id's for fetching the actual content
+		  ArrayList<Integer> id = new ArrayList<Integer>();
 		  //where the cache of titles are stored when initially 
 		  Set<String> tempsavedtitles;
 		  String[] savedtitles;
@@ -144,6 +148,8 @@ public class Home extends Activity
 		  //Global constants
 		  // this is the number of titles that are fetched in groups
 		  final static int NO_TITLES = 10;
+		  // for the ID we send
+		  public final static String EXTRA_MESSAGE = "com.spider.motorindia.ID";
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -174,10 +180,7 @@ public class Home extends Activity
         if(orientation==-1){
         	orientation = config.orientation;
         }
-        else if(orientation == config.orientation){
-        	orientation_same=1;
-        }
-        else{
+        else {
         	orientation_same=0;
         }
 
@@ -203,7 +206,7 @@ public class Home extends Activity
         	createNetErrorDialog();
         	toast("NO internet connection");
         }
- 
+        
     }
     
     protected void createNetErrorDialog() {
@@ -280,6 +283,21 @@ public class Home extends Activity
          	//set "list" the handle, pointing to the respective views
             list=(ListView)findViewById(R.id.listView1);
             list.setAdapter(adapter);
+            list.setOnItemClickListener(new OnItemClickListener() {
+
+            
+
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int position, long arg3) {
+					// lets handle the click send the id to displayarticle activity
+					Intent intent = new Intent(Home.this,Displayarticle.class);
+					intent.putExtra(EXTRA_MESSAGE, id.get(position));
+					startActivity(intent);
+					
+				}
+
+            });
     	}
     	else{
     		// As we don't have Internet connectivity
@@ -403,7 +421,9 @@ public class Home extends Activity
         list_clear=1;
         if(first_time==0){
         	if(mTitle.toString()==getString(R.string.title_section3)){
-        		launchthreadstogettitles(no, from, "ConstructionEquipment");
+        		//launchthreadstogettitles(no, from, "ConstructionEquipment");
+        		//causing crash!!
+        		toast("sorry under construction... ");
         	}
         	else if(mTitle.toString()==getString(R.string.title_section8)){
         		launchthreadstogettitles(no, from, "Lubes");
@@ -509,23 +529,28 @@ public class Home extends Activity
 		//we have got a whole JSONArray, update the count
 		nojson=nojson+NO_TITLES;
 		
-		//when the JSON array  titles has loaded, we can change the footer's text to reflect the fact we can fetch more article
-		TextView footer =(TextView)findViewById(R.id.footer_1);	
-		footer.setText("Fetch More Articles");
 		
  		// I got the JSON! i just used a interface! Communication complete!
 		if(list_clear==1){
-			// reset the titles arraylist, as we are getting the latest titles from their server
+			// reset the titles arraylist, as we are getting the latest titles from their server same with images and id, duh
 			titles.clear();
 			images.clear();
+			id.clear();
 			list_clear=0;
 			}
 		for(int i=0;i<no;i++){
 			try {
 				//Just add the titles to the titles array
 				titles.add(result.getJSONObject(i).getString("title"));
-				//fetch the image URL store it
-				images.add(result.getJSONObject(i).getString("image"));
+				if(result.getJSONObject(i).getString("image")==""){
+					images.add("http://spider.nitt.edu/~adityap/resources/images/noimageavailable.jpg");
+				}else{
+					//fetch the image URL store it
+					images.add(result.getJSONObject(i).getString("image"));
+				}
+				// get the ID for sending with the Intent
+				id.add(result.getJSONObject(i).getInt("id"));
+				
 				
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block

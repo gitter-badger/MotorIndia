@@ -31,7 +31,6 @@ this.imageurl = imageurl;
 
 @Override
 public View getView(int position, View view, ViewGroup parent) {
-	Log.i("debug","check");
 LayoutInflater inflater = context.getLayoutInflater();
 View rowView= inflater.inflate(R.layout.single_line, null, true);
 TextView txtTitle = (TextView) rowView.findViewById(R.id.text);
@@ -42,6 +41,9 @@ if(imageurl==null){
 }
 else{
 	ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
+	if(imageurl[position]==""){
+		Log.i("debug","fuck");
+	}
 	Picasso.with(context).load(imageurl[position]).placeholder(R.drawable.ic_launcher).error(R.drawable.error).resize(200, 150).into(imageView);
 	
 }

@@ -68,16 +68,18 @@ public class Retrivejson extends AsyncTask<String, Void, JSONArray> {
 
 		return null;
     }
+    
 
     @Override
     protected JSONArray doInBackground(String... params) {
+    	// this accepts multiple strings as argument the first string is fed into the function getJSONFromUrl where the whole "Work" takes place
         String url = params[0];
         return getJSONFromUrl(url);
     }
 
     @Override
     protected void onPostExecute(JSONArray result) {
-        //So that i have the JSON ready to use, i use the call back to send it to the 'customlist.java' ;)
+        //So that i have the JSON array ready to use, i use the call back to send it to the 'customlist.java' ;)
         mCallback.onRequestCompleted(result);
     }
 }
