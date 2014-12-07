@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import spider.motorindia.Retrivearticle.MyCallbackInterface;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,6 +26,10 @@ public class Displayarticle extends Activity implements MyCallbackInterface {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_displayarticle);
 	
+		//TO get the icon on the back button in the top left corner
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setTitle("Motorindia");
 		//handle the incoming INTENT
 		Intent intent = getIntent();
 		int message = intent.getIntExtra(Home.EXTRA_MESSAGE,26479);
