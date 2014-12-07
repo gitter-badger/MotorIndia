@@ -22,15 +22,17 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v4.widget.DrawerLayout;
 
@@ -100,18 +102,6 @@ public class Home extends Activity
 		      R.drawable.ic_launcher,
 		      R.drawable.ic_launcher,
 		      R.drawable.ic_launcher,
-		      R.drawable.ic_launcher,
-		      R.drawable.ic_launcher,
-		      R.drawable.ic_launcher,
-		      R.drawable.ic_launcher,
-		      R.drawable.ic_launcher,
-		      R.drawable.ic_launcher,
-		      R.drawable.ic_launcher,
-		      R.drawable.ic_launcher,
-		      R.drawable.ic_launcher,
-		      R.drawable.ic_launcher,
-		      R.drawable.ic_launcher,
-		      R.drawable.ic_launcher,
 		  };
 
 		  //Due to the requirement for dynamic lists, ie add titles as we go down we need to
@@ -143,6 +133,8 @@ public class Home extends Activity
 		  // to keep track of orientation change
 		  int orientation_same = 1;
 		  int orientation = -1;
+		  // to make sure only 10 article are called not more than that on scroll down
+		  int oldtotal=10,once=1;
 
 		  
 		  //Global constants
@@ -283,6 +275,7 @@ public class Home extends Activity
          	//set "list" the handle, pointing to the respective views
             list=(ListView)findViewById(R.id.listView1);
             list.setAdapter(adapter);
+            // set the onclick listener
             list.setOnItemClickListener(new OnItemClickListener() {
 
             
@@ -298,6 +291,88 @@ public class Home extends Activity
 				}
 
             });
+            
+            // set the onscroll listener
+            list.setOnScrollListener(new OnScrollListener(){
+                public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                	Log.i("debug","first "+Integer.toString(firstVisibleItem)+" visible Item count "+Integer.toString(visibleItemCount)+" Total item count "+Integer.toString(totalItemCount));
+                    
+					
+					int check = totalItemCount/4;
+					int delay;
+					if(firstVisibleItem>=check){
+						delay=1;
+					}
+					else{
+						delay=0;
+					}
+					if(totalItemCount==(firstVisibleItem+visibleItemCount) && delay==1){
+						
+						//all so that it Doesn't do a lot of calls in a single call
+						if(once==1){
+							once=0;
+							Log.i("debug", "ONCE");
+	                    	toast("Checking if Internet is available");
+	                    	if(!isNetworkConnected()){
+	                    		toast("Fetching of articles Failed! No Internet. ");
+	                    		return;
+	                    	}
+	                    	toast("Fetching next "+Integer.toString(NO_TITLES)+" articles");
+	                    	//start from 11th latest article when this is first called, then for subsequent calls
+	                    	from=from+10;
+	                    	// and get NO_TITLES articles from "from"
+	                    	no=NO_TITLES;
+	                    	//And start the threads
+	                    	if(mTitle.toString()==getString(R.string.title_section3)){
+	                    		launchthreadstogettitles(no, from, "ConstructionEquipment");
+	                    	}
+	                    	else{
+	                        launchthreadstogettitles(no, from, mTitle.toString());
+	                    	}
+	                    	delay=0;
+	                    	oldtotal=totalItemCount;
+	                    	return;
+	                    }
+						if(oldtotal!=totalItemCount){
+							once=1;
+						}
+                    	
+                    	
+                    	
+                    }
+					
+					
+                	//So let fetch more when the first item is total-6 ie when the 6th lat article is seen
+                	/*
+                	toast("Checking if Internet is available");
+                	if(!isNetworkConnected()){
+                		toast("Fetching of articles Failed! No Internet. ");
+                		return;
+                	}
+                	toast("Fetching next "+Integer.toString(NO_TITLES)+" articles");
+                	//start from 11th latest article when this is first called, then for subsequent calls
+                	from=from+10;
+                	// and get NO_TITLES articles from "from"
+                	no=NO_TITLES;
+                	//And start the threads
+                	if(mTitle.toString()==getString(R.string.title_section3)){
+                		launchthreadstogettitles(no, from, "ConstructionEquipment");
+                	}
+                	else{
+                    launchthreadstogettitles(no, from, mTitle.toString());
+                	}
+                	*/
+                	
+                }
+                	
+                	
+				@Override
+				public void onScrollStateChanged(AbsListView arg0, int arg1) {
+					// TODO Auto-generated method stub
+					
+				}
+            });
+            
     	}
     	else{
     		// As we don't have Internet connectivity
@@ -306,9 +381,7 @@ public class Home extends Activity
          	// set "list" the handle, pointing to the respective views
             list=(ListView)findViewById(R.id.listView1);
             list.setAdapter(adapter);
-            // set a more appropriate footer
-            TextView footer =(TextView)findViewById(R.id.footer_1);	
-			footer.setText("No internet - Cannot Load Articles");
+            
             
     	}
     	//As the first run is over
@@ -442,13 +515,6 @@ public class Home extends Activity
         else{
         	createNetErrorDialog();
            //populatelist();
-        }
-        if(orientation_same==1){
-        	//set "list" the handle, pointing to the respective views
-            list=(ListView)findViewById(R.id.listView1);
-            //TODO, find out WHY!!! passing null as the parent works.. i need to remove this link error OR explain it away
-            View footerView = ((LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.footer_layout, null, false);
-            list.addFooterView(footerView);	
         }
         
         
