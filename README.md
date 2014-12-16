@@ -27,11 +27,32 @@ the app cache. We can click on the footer of the list to fetch the next 10 artic
 Screenshots
 -----------
 
-![App Startup](http://spider.nitt.edu/~adityap/resources/Motorindia/screenshots/App_startup.png)
-![Navigation Drawer](http://spider.nitt.edu/~adityap/resources/Motorindia/screenshots/Navigationdrawer.png)
-![Navigation Drawer](http://spider.nitt.edu/~adityap/resources/Motorindia/screenshots/Navigationdrawerlandscape.png)
-![Main List View](http://spider.nitt.edu/~adityap/resources/Motorindia/screenshots/MainListview.png)
-![Fetch More](http://spider.nitt.edu/~adityap/resources/Motorindia/screenshots/fetchmore.png)
-![Fetching...](http://spider.nitt.edu/~adityap/resources/Motorindia/screenshots/fetching.png)
+![App Startup](http://spider.nitt.edu/~adityap/resources/Motorindia/screenshots/V0.2.0_app_startup.png)
+![After Loading](http://spider.nitt.edu/~adityap/resources/Motorindia/screenshots/V0.2.0_after_loading.png)
+![Navigation Drawer](http://spider.nitt.edu/~adityap/resources/Motorindia/screenshots/V0.2.0_navigation_drawer.png)
+![Main List View](http://spider.nitt.edu/~adityap/resources/Motorindia/screenshots/V0.2.0_mainlistview.png)
+![Loading article Landscape](http://spider.nitt.edu/~adityap/resources/Motorindia/screenshots/V0.2.0_loading_landscape.png)
+![Actual article Portrait](http://spider.nitt.edu/~adityap/resources/Motorindia/screenshots/V0.2.0_article_portrait.png)
+![Actual article landscape](http://spider.nitt.edu/~adityap/resources/Motorindia/screenshots/V0.2.0_article_landscape.png)
+![Scrolling article Portrait](http://spider.nitt.edu/~adityap/resources/Motorindia/screenshots/V0.2.0_article_scrolling.png)
+
+
+APK
+----------
+
+* Version 0.0.1 - [Download][2]
+
+* Version 0.1.0 - [Download][3]
+
+* Version 0.1.1 - [Download][4]
+
+* Version 0.1.2 - [Download][5]
+
+* Version 0.2.0 - [Download][6]
 
 [1]: http://www.motorindiaonline.in/
+[2]: http://spider.nitt.edu/~adityap/resources/Motorindia/MotorIndiaV0.0.1.apk
+[3]: http://spider.nitt.edu/~adityap/resources/Motorindia/MotorIndiaV0.1.0.apk
+[4]: http://spider.nitt.edu/~adityap/resources/Motorindia/MotorIndiaV0.1.1.apk
+[5]: http://spider.nitt.edu/~adityap/resources/Motorindia/MotorIndiaV0.1.2.apk
+[6]: http://spider.nitt.edu/~adityap/resources/Motorindia/MotorIndiaV0.2.0.apk
