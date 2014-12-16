@@ -17,15 +17,30 @@
         android:text="@string/hello_world"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <TextView
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView1"
+        android:layout_below="@+id/textView1"
+        android:layout_marginTop="40dp" >
+        <TextView
         android:id="@+id/textView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView1"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="29dp"
-        android:maxLines = "40"
-        android:scrollbars = "vertical"
+        android:maxLines="40"
+        android:scrollbars="vertical"
         android:text="@string/hello_world" />
+    </ScrollView>
+
+    <WebView
+        android:id="@+id/webView1"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_below="@+id/scrollView1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="35dp" />
+
+
 
 </RelativeLayout>

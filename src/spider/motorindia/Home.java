@@ -43,16 +43,6 @@ public class Home extends Activity
 
 	
 
-	//TODO
-	/*
-	 * use the links provided by rishi and GET the images dynamically
-	for now we are using stored images for storage
-
-
-	these titles, ie "savedtitles" are shown in case Internet is not available
-	MAKE these savedtitles values persistent ie, store it in app cache.
-	UPDATE these values with the latest NO_TITLES titles everytime Internet connection is established
-	 */
 
 	
 	String[] defaulttitles = {
@@ -184,15 +174,16 @@ public class Home extends Activity
         of an array when there is no such instance or array to use.
          */
 
-        //TODO if orientation changed, then dont call the whole thing again!
+        //TODO if orientation changed, then dont call the whole thing again! this is part of caching the titles and corresponding article contents
         if(isNetworkConnected()){
+        	/* this caused problem in orientation change lets keep it in action bar
         	// launch threads to get NO_TITLES titles from latest article
         	// As by default they are in Trucks section
         	if(first_time==1){
         		//no need to do this the task is launched from the action bar override 
         		launchthreadstogettitles(no,from,"Trucks");
         	}
-            
+            */
         }
         else{
         	createNetErrorDialog();
@@ -253,12 +244,8 @@ public class Home extends Activity
     	// and get NO_TITLES articles from "from"
     	no=NO_TITLES;
     	//And start the threads
-    	if(mTitle.toString()==getString(R.string.title_section3)){
-    		launchthreadstogettitles(no, from, "ConstructionEquipment");
-    	}
-    	else{
         launchthreadstogettitles(no, from, mTitle.toString());
-    	}
+    	
     }
 
     //a function to populate the list with titles from titles (as of now)
@@ -274,7 +261,13 @@ public class Home extends Activity
          	CustomList adapter = new CustomList(Home.this, titlearray, imageId, imageurl);
          	//set "list" the handle, pointing to the respective views
             list=(ListView)findViewById(R.id.listView1);
+            if(list==null){
+            	// fixed the crash on quick orientation change or basically when this function is called during the period of time when "listview" is not part of the layout
+            	// this happens as this function is called asynchronously, thus its possible to be called during the time the listview is being drawn.
+            	return;
+            }
             list.setAdapter(adapter);
+            
             // set the onclick listener
             list.setOnItemClickListener(new OnItemClickListener() {
 
@@ -323,12 +316,8 @@ public class Home extends Activity
 	                    	// and get NO_TITLES articles from "from"
 	                    	no=NO_TITLES;
 	                    	//And start the threads
-	                    	if(mTitle.toString()==getString(R.string.title_section3)){
-	                    		launchthreadstogettitles(no, from, "ConstructionEquipment");
-	                    	}
-	                    	else{
 	                        launchthreadstogettitles(no, from, mTitle.toString());
-	                    	}
+	                        
 	                    	delay=0;
 	                    	oldtotal=totalItemCount;
 	                    	return;
@@ -368,7 +357,7 @@ public class Home extends Activity
                 	
 				@Override
 				public void onScrollStateChanged(AbsListView arg0, int arg1) {
-					// TODO Auto-generated method stub
+					//Not being used!
 					
 				}
             });
@@ -395,6 +384,12 @@ public class Home extends Activity
 
     //the function which starts the threads which in turn get the titles and set them as soon as we get them in the onrequestcompleted function
     public void launchthreadstogettitles(int no, int start, String category ){
+    	if(category==getString(R.string.title_section3)){
+    		category="ConstructionEquipment";
+    	}
+    	else if(category==getString(R.string.title_section8)){
+    		category="Lubes";
+    	}
     	String link = "http://motorindiaonline.in/mobapp/?s_i="+Integer.toString(start)+"&e_i="+Integer.toString(no)+"&cat_i="+category;
 		new Retrivejson(this).execute(link);
 		
@@ -460,7 +455,6 @@ public class Home extends Activity
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
         
-		//TODO
         //AFTER A LOT OF WORK, @vishnugt has found a workaround, a fix to inflate the listview
         //different values will be used to populate the list when different options are selected
 
@@ -490,27 +484,13 @@ public class Home extends Activity
         }
         
         if(isNetworkConnected()){
-        // because we dont want the last sections's titles to remain in the listview we set it to clear by
+        // because we don't want the last sections's titles to remain in the listview we set it to clear by
         list_clear=1;
-        if(first_time==0){
-        	if(mTitle.toString()==getString(R.string.title_section3)){
-        		//launchthreadstogettitles(no, from, "ConstructionEquipment");
-        		//causing crash!!
-        		toast("sorry under construction... ");
-        	}
-        	else if(mTitle.toString()==getString(R.string.title_section8)){
-        		//launchthreadstogettitles(no, from, "Lubes");
-        		//causing crash!!
-        		toast("sorry under construction... ");
-        	}
-        	else{
-        		
-        	// And we launch the thread to get the JSON for the
-            launchthreadstogettitles(no, from, mTitle.toString());
-            //We are already doing this in on create, no need to do it twice. Also in case of no internet
-            // this line will cause the app to crash
-        	}
-        }
+
+        // And we launch the thread to get the JSON for the
+        launchthreadstogettitles(no, from, mTitle.toString());
+        //We are already doing this in on create, no need to do it twice. Also in case of no internet
+        // this line will cause the app to crash
     }
         else{
         	createNetErrorDialog();
@@ -594,6 +574,9 @@ public class Home extends Activity
     //This is the method inherited from Mycallbackinterface, which is called by retriveJSON after it receives the JSON object.
 	@Override
 	public void onRequestCompleted(JSONArray result) {
+		if(result==null){
+			return;
+		}
 		//we have got a whole JSONArray, update the count
 		nojson=nojson+NO_TITLES;
 		
@@ -610,8 +593,8 @@ public class Home extends Activity
 			try {
 				//Just add the titles to the titles array
 				titles.add(result.getJSONObject(i).getString("title"));
-				if(result.getJSONObject(i).getString("image")==""){
-					images.add("http://spider.nitt.edu/~adityap/resources/images/noimageavailable.jpg");
+				if(result.getJSONObject(i).getString("image") == null || result.getJSONObject(i).getString("image").isEmpty()){
+					images.add("http://spider.nitt.edu/~adityap/resources/images/motorindia_site.png");
 				}else{
 					//fetch the image URL store it
 					images.add(result.getJSONObject(i).getString("image"));
@@ -621,7 +604,7 @@ public class Home extends Activity
 				
 				
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
+				// nothing to here, *for now*
 				e.printStackTrace();
 			}
 			}
