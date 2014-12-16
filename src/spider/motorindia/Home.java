@@ -236,6 +236,7 @@ public class Home extends Activity
     	   return true;
     }
 
+    /*
     //a function to get the next NO_TITLES articles
     public void update(View v){
     	toast("Checking if Internet is available");
@@ -252,7 +253,7 @@ public class Home extends Activity
         launchthreadstogettitles(no, from, mTitle.toString());
 
     }
-
+*/
     //a function to populate the list with titles from titles (as of now)
     public void populatelist(){
 
@@ -294,7 +295,13 @@ public class Home extends Activity
             list.setOnScrollListener(new OnScrollListener(){
                 public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 	Log.i("debug","first "+Integer.toString(firstVisibleItem)+" visible Item count "+Integer.toString(visibleItemCount)+" Total item count "+Integer.toString(totalItemCount));
-
+                	// if we are in the "Batteries" category where we only have 4 articles
+                	if(mTitle.toString()==getString(R.string.title_section9)){
+                		//we should return as the list is always in such a position that we request more articles
+                		// this will cause a overload of asynctasks being launched.
+                		return;
+                		//TODO I recommend removing this unimportant category.
+                	}
 
 					int check = totalItemCount/4;
 					int delay;
