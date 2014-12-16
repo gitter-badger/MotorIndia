@@ -28,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
@@ -41,10 +42,10 @@ import android.support.v4.widget.DrawerLayout;
 public class Home extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, MyCallbackInterface {
 
-	
 
 
-	
+
+
 	String[] defaulttitles = {
 		      "	 Tata Motors joins hands with Microlise for advanced telematics and fleet management services",
 		      "	 Green manufacturing, a major challenge for emerging companies: Dr. Wilfried G. Aulbur",
@@ -58,7 +59,7 @@ public class Home extends Activity
 		  } ;
 	// the number of hardcoded titles
 	int notitles =9;
-	
+
 		 Integer[] imageId = {
 		      R.drawable.ic_launcher,
 		      R.drawable.ic_launcher,
@@ -100,9 +101,11 @@ public class Home extends Activity
 		  ArrayList<String> images = new ArrayList<String>();
 		  // Similarly we need the list of id's for fetching the actual content
 		  ArrayList<Integer> id = new ArrayList<Integer>();
-		  //where the cache of titles are stored when initially 
+		  //where the cache of titles are stored when initially
 		  Set<String> tempsavedtitles;
 		  String[] savedtitles;
+
+
 
 
 	//Global variables
@@ -125,8 +128,10 @@ public class Home extends Activity
 		  int orientation = -1;
 		  // to make sure only 10 article are called not more than that on scroll down
 		  int oldtotal=10,once=1;
+		  // webview handle for the loading animation
+		  WebView load;
 
-		  
+
 		  //Global constants
 		  // this is the number of titles that are fetched in groups
 		  final static int NO_TITLES = 10;
@@ -180,7 +185,7 @@ public class Home extends Activity
         	// launch threads to get NO_TITLES titles from latest article
         	// As by default they are in Trucks section
         	if(first_time==1){
-        		//no need to do this the task is launched from the action bar override 
+        		//no need to do this the task is launched from the action bar override
         		launchthreadstogettitles(no,from,"Trucks");
         	}
             */
@@ -189,9 +194,9 @@ public class Home extends Activity
         	createNetErrorDialog();
         	toast("NO internet connection");
         }
-        
+
     }
-    
+
     protected void createNetErrorDialog() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -216,7 +221,7 @@ public class Home extends Activity
         AlertDialog alert = builder.create();
         alert.show();
     }
-    
+
 
 
 
@@ -230,7 +235,7 @@ public class Home extends Activity
     	  } else
     	   return true;
     }
-    
+
     //a function to get the next NO_TITLES articles
     public void update(View v){
     	toast("Checking if Internet is available");
@@ -245,12 +250,12 @@ public class Home extends Activity
     	no=NO_TITLES;
     	//And start the threads
         launchthreadstogettitles(no, from, mTitle.toString());
-    	
+
     }
 
     //a function to populate the list with titles from titles (as of now)
     public void populatelist(){
-    	
+
     	if(isNetworkConnected()){
     	   	//this sets up the dynamic array which is send to the adapter's constructor
             titlearray = titles.toArray(new String[titles.size()]);
@@ -267,11 +272,11 @@ public class Home extends Activity
             	return;
             }
             list.setAdapter(adapter);
-            
+
             // set the onclick listener
             list.setOnItemClickListener(new OnItemClickListener() {
 
-            
+
 
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1,
@@ -280,17 +285,17 @@ public class Home extends Activity
 					Intent intent = new Intent(Home.this,Displayarticle.class);
 					intent.putExtra(EXTRA_MESSAGE, id.get(position));
 					startActivity(intent);
-					
+
 				}
 
             });
-            
+
             // set the onscroll listener
             list.setOnScrollListener(new OnScrollListener(){
                 public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 	Log.i("debug","first "+Integer.toString(firstVisibleItem)+" visible Item count "+Integer.toString(visibleItemCount)+" Total item count "+Integer.toString(totalItemCount));
-                    
-					
+
+
 					int check = totalItemCount/4;
 					int delay;
 					if(firstVisibleItem>=check){
@@ -300,7 +305,7 @@ public class Home extends Activity
 						delay=0;
 					}
 					if(totalItemCount==(firstVisibleItem+visibleItemCount) && delay==1){
-						
+
 						//all so that it Doesn't do a lot of calls in a single call
 						if(once==1){
 							once=0;
@@ -317,7 +322,7 @@ public class Home extends Activity
 	                    	no=NO_TITLES;
 	                    	//And start the threads
 	                        launchthreadstogettitles(no, from, mTitle.toString());
-	                        
+
 	                    	delay=0;
 	                    	oldtotal=totalItemCount;
 	                    	return;
@@ -325,12 +330,12 @@ public class Home extends Activity
 						if(oldtotal!=totalItemCount){
 							once=1;
 						}
-                    	
-                    	
-                    	
+
+
+
                     }
-					
-					
+
+
                 	//So let fetch more when the first item is total-6 ie when the 6th lat article is seen
                 	/*
                 	toast("Checking if Internet is available");
@@ -351,17 +356,17 @@ public class Home extends Activity
                     launchthreadstogettitles(no, from, mTitle.toString());
                 	}
                 	*/
-                	
+
                 }
-                	
-                	
+
+
 				@Override
 				public void onScrollStateChanged(AbsListView arg0, int arg1) {
 					//Not being used!
-					
+
 				}
             });
-            
+
     	}
     	else{
     		// As we don't have Internet connectivity
@@ -370,8 +375,8 @@ public class Home extends Activity
          	// set "list" the handle, pointing to the respective views
             list=(ListView)findViewById(R.id.listView1);
             list.setAdapter(adapter);
-            
-            
+
+
     	}
     	//As the first run is over
         first_time=0;
@@ -392,7 +397,7 @@ public class Home extends Activity
     	}
     	String link = "http://motorindiaonline.in/mobapp/?s_i="+Integer.toString(start)+"&e_i="+Integer.toString(no)+"&cat_i="+category;
 		new Retrivejson(this).execute(link);
-		
+
     }
 
     @Override
@@ -445,7 +450,7 @@ public class Home extends Activity
     		case 13:
     			mTitle = getString(R.string.title_section13);
     			break;
-    		
+
         }
     }
 
@@ -454,7 +459,11 @@ public class Home extends Activity
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
-        
+
+        // to start the loading animation
+     	load = (WebView)findViewById(R.id.webView2);
+     	load.loadUrl("file:///android_asset/spiffygif.gif");
+
         //AFTER A LOT OF WORK, @vishnugt has found a workaround, a fix to inflate the listview
         //different values will be used to populate the list when different options are selected
 
@@ -465,24 +474,24 @@ public class Home extends Activity
         	//that a click has been registered
         }
         else if(mTitle==getString(R.string.title_section2)){
-        	
+
         }
         else if(mTitle==getString(R.string.title_section3)){
-        	
+
         }
         else if(mTitle==getString(R.string.title_section4)){
-        	
+
         }
         else if(mTitle==getString(R.string.title_section5)){
-        	
+
         }
         else if(mTitle==getString(R.string.title_section6)){
-        	
+
         }
         else if(mTitle==getString(R.string.title_section7)){
-        	
+
         }
-        
+
         if(isNetworkConnected()){
         // because we don't want the last sections's titles to remain in the listview we set it to clear by
         list_clear=1;
@@ -496,8 +505,8 @@ public class Home extends Activity
         	createNetErrorDialog();
            //populatelist();
         }
-        
-        
+
+
         //as right now we have a single list for all these cases we call the function populatelist() (Right now no arguments because of that)
         //we only need to populate it once (on create the flag variable workaround is set thus using it we only call it the first time
         // the actionbar is drawn
@@ -577,10 +586,12 @@ public class Home extends Activity
 		if(result==null){
 			return;
 		}
+		// stop loading gif
+		load.setVisibility(View.GONE);
 		//we have got a whole JSONArray, update the count
 		nojson=nojson+NO_TITLES;
-		
-		
+
+
  		// I got the JSON! i just used a interface! Communication complete!
 		if(list_clear==1){
 			// reset the titles arraylist, as we are getting the latest titles from their server same with images and id, duh
@@ -601,15 +612,15 @@ public class Home extends Activity
 				}
 				// get the ID for sending with the Intent
 				id.add(result.getJSONObject(i).getInt("id"));
-				
-				
+
+
 			} catch (JSONException e) {
 				// nothing to here, *for now*
 				e.printStackTrace();
 			}
 			}
-		
-						
+
+
 		//populate the list with the fetched data
 		populatelist();
 

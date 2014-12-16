@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
 import android.widget.TextView;
 
@@ -63,6 +64,15 @@ public class Displayarticle extends Activity implements MyCallbackInterface {
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
+		switch(id){
+		case R.id.action_settings:
+			//yo
+			return true;
+		case android.R.id.home:
+			//made it such that we go the the category we were browsing before we opened the article
+			onBackPressed();
+			return true;
+		}
 		if (id == R.id.action_settings) {
 			return true;
 		}
@@ -72,9 +82,10 @@ public class Displayarticle extends Activity implements MyCallbackInterface {
 	@Override
 	public void onRequestCompleted(JSONObject result) {
 		// stop loading gif
-		load.destroy();
+		//load.destroy();
+		load.setVisibility(View.GONE);
 		
-		// SO here we get the Json object = result
+		// SO here we get the JSON object = result
 		try {
 			title=result.getString("title");
 			body=result.getString("content");
